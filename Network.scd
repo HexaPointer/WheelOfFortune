@@ -1,12 +1,9 @@
-//Geklauter Code von Patricks responders.scd
+//Das hier wird dann der Client code
 
-NetAddr.langPort;
 
 /*
 OSCjunction Setup:
-- Node 2 auswählen
-- Eigenen langPort herausfinden
-- 'Start Receiving' auf 'RTT-Studie-Broadcast' (Port wie bei NetAddr.langPort)
+- 'Start Receiving' auf 'RTT-Studie-Broadcast' (Port:*/ NetAddr.langPort;/*)
 - 'Start Sending' auf 'RTT-Studie-Rückkanal' (Port: 57140)
 */
 
@@ -14,180 +11,62 @@ OSCjunction Setup:
 var net = NetAddr("127.0.0.1", 57140);
 var id = 500000000.rand;
 
-var groupChangeProbability = 0.2;
-var numGroups = 1;
-var group = 0;
+//Sendet eigene ID an Master
+net.sendMsg('/sendID', id.asSymbol);
 
-("My ID:" + id).postln;
+var nextID = 0; //Nächster User im Kreis
 
-OSCdef(\call, {|msg|
-	// Incoming OSC message layout:
-	// [s: cmd, i: group, i: callID, i: numGroups]
-	msg.postln;
 
-	numGroups = msg[3];
+//ID vom nächsten kriegen um Kreis zu bilden
+OSCdef(\circle, {|msg|
+	//Die reinkommende Message besteht aus [s: cmd, i: recieverID, i: nextID]
+	msg.postln; //for debugging
 
-	(group.isNil || groupChangeProbability.coin || (group >= numGroups)).if {
-		group = numGroups.rand.value;
-		("Now in group " + group).postln;
-	};
-
-	(msg[1] == group).if ({
-		// send back
-		net.sendMsg('/response', id, msg[2]);
-		"Responded!".postln;
-	}, {
-		"Got a call, but not for my group.".postln;
+	(msg[1] == id).if({
+		nextID = msg[2];
 	});
 
-}, '/call');
+}, '/circle');
+
+OSCdef(\ {
+	//DO THE THINGS
+}, /)
+
+
+
+
+
+
+
 )
-
-
-
 
 ///////////////////////////////////////////////
-//Geklauter Code von Patricks call-and-sound.scd
 
-// Achtung: outChannel unten anpassen!
-
-( // config
-
-s.options.memSize = 32768;
-s.reboot;
-)
-
-s.meter;
-
-
-( // live code parameters
-var durations = Prand([0.5], inf).asStream * 2;
-~nextDuration = {
-	durations.next;
-};
-
-~numGroups = 4;
-~degrees = (0..5);
-~octaves = [3, 4, 5, 6];
-~scale = Scale.chromatic;
-
-)
-
-( // SynthDefs
-SynthDef(\delay, {|in, out=0, time=1|
-	var sig = In.ar(in, 2);
-	sig = FbC({|fb| (sig + fb) * 0.85}, time, time, 2) + sig * 0.5;
-	Out.ar(out, sig);
-}).add;
-
-SynthDef(\sound, {|freq=440, out=0, amp=0.1, pan=0, modRatio=1|
-
-	var staticAmp = 1.0;
-
-	// to decorelate
-	var lfAmpMod = SinOsc.kr(Rand(0.2, 0.8), phase: Rand(0, 2pi)).range(0.95, 1.0);
-	var lfFreqMod = SinOsc.kr(Rand(0.1, 4.0), phase: Rand(0, 2pi)).range(-3, 3);
-
-	var mod = SinOsc.ar(modRatio * freq + lfFreqMod, mul: XLine.ar(freq * 2, 0.01, 0.15));
-	var sig = SinOsc.ar(freq + mod) * lfAmpMod;
-	var env = EnvGen.ar(Env.perc(0.001, 1), doneAction: 2);
-	Out.ar(out, Pan2.ar(sig * env * amp * AmpComp.kr(freq, 110) * staticAmp, pan));
-}).add;
-
-SynthDef(\reverb, {|in, out|
-	var sig = In.ar(in, 2);
-	Out.ar(out, sig + (JPverb.ar(sig, 2) * 0.09));
-}).add;
-)
-
-( // Main Game
-var outChannel = 0;
+//Das hier wird dann der Master code
 
 var net = NetAddr("127.0.0.1", 57150);
-var minRTT = 0.04;
-var maxRTT = 0.5; // everything that takes longer can be discarded
-var numDelays = 16;
-var delayDenominator = (4.0 / numDelays);
-var baseDelay = 4.0 * delayDenominator;
+var idArray = Array.new;
+var idCount = 0;
 
-var callID = 0;
-var data = ();
 
-var reverbBus = Bus.audio(s, 2);
-var reverb = Synth(\reverb, [\in, reverbBus, \out, outChannel]);
+// Erstellt aus allen IDs einen Kreis
+var generateCircle = {||
 
-var delayBusses = numDelays.collect {|i|
-	var bus = Bus.audio(s, 2);
-	Synth(\delay, [\out, reverbBus, \in, bus, \time, baseDelay + ((i) * delayDenominator)]);
-	bus;
 };
 
-var play = {|clientID, rtt|
-	// first generate some parameters from the clientID ...
-	// ... very random, but at least they will stay the same.
+//Wird gecalled, wenn ein client seine ID schickt
+OSCdef(\sendID, {|msg|
+	//die reinkommende Message besteht aus [s: command, symbol: id]
+	msg.postln; //for debugging
 
-	var pan = (clientID % 1000).linlin(0, 1000, -1, 1);
-	var amp = 0.1;
-	var degree = ~degrees[clientID % ~degrees.size];
-	var octave = ~octaves[clientID % ~octaves.size];
-	var modRatio = 1 + (clientID % 5);
+	switch (idCount,
+		0, {
+			idArray.add(msg[1]);
+		} //TODO
+	)
+}, '/sendID');
 
-	// this is derived from the rtt
-	var rttIndex = rtt.explin(minRTT, maxRTT, 0, numDelays).floor.asInteger;
-	var timingOffset = rttIndex * (0.0 / 64.0); // maybe not needed
+//sendet jedem client die ID vom nächsten im Kreis
+net.sendMsg('/circle', recieverID, ~recieverID, nextID, ~nextID);
 
-	("RTT Index:" + rttIndex).postln;
-
-	(
-		\instrument: \sound,
-		\out: delayBusses[rttIndex],
-		\scale: ~scale,
-		\octave: octave,
-		\degree: degree,
-		\modRatio: modRatio,
-		\pan: pan,
-		\amp: 0.3,
-		\timingOffset: timingOffset
-	).play;
-};
-
-// returns a funciton which will be scheduled
-var playResponses = {|thisCallID|
-	{
-		var responses = data[thisCallID][\responses];
-		("Play:" + thisCallID).postln;
-		responses.postln;
-		data.removeAt(thisCallID);
-		responses.do {|response|
-			play.value(response[\id], response[\rtt]);
-		};
-	};
-};
-
-OSCdef(\response, {|msg|
-	// [s: cmd, i: clientID, i: callID]
-	var callID = msg[2];
-	var clientID = msg[1];
-
-
-	// if this is nil then message was too late, so discard!
-	data[callID].isNil.not.if {
-		data[callID][\responses].add((
-			id: clientID,
-			rtt: TempoClock.default.beats - data[callID][\time]
-		));
-	};
-}, '\response');
-
-// main loop
-fork {
-	inf.do {
-		net.sendMsg('/call', callID % ~numGroups, callID, ~numGroups);
-		("Call:"+ callID).postln;
-		data[callID] = (time: TempoClock.default.beats, responses: List());
-		TempoClock.default.sched(maxRTT, playResponses.value(callID));
-		callID = callID + 1;
-		~nextDuration.value.wait;
-	};
-};
 )
