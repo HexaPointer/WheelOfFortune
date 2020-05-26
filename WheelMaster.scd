@@ -1,0 +1,100 @@
+///////////////////////////////////////////////
+
+//Das hier wird dann der Master code
+
+~idList = List.new; //enthält alle IDs der clients
+~netMaster = NetAddr("127.0.0.1", 57140);
+(
+
+// Fragt alle Clients nach ID
+var getIDs = { //verbinden mit "Get IDs" Button
+	~netMaster.sendMsg('/getID');
+};
+
+// Erstellt aus allen IDs einen Kreis
+var formCircle = { //verbinden mit "Form Circle" Button
+	//sendet jedem client die ID vom nächsten im Kreis
+	for (0,  ~idList.size - 1,
+		{arg index;
+			~netMaster.sendMsg('/circle', ~idList.at(index), ~idList.at((index + 1) % ~idList.size));
+		}
+	);
+};
+
+//Sendet Signal an ersten Client im Kreis
+var sendStartSignal = { //verbinden mit "Send Signal" Button
+	~netMaster.sendMsg('/signal', ~idList.first);
+};
+
+//das hier wird das Master-Fenster
+var window = Window.new("WOF - Master", Rect(100, 100, 215, 500), false).background_(Color.white);
+
+//Wird gecalled, wenn ein client seine ID schickt
+OSCdef(\sendID, {arg msg;
+	//die reinkommende Message besteht aus [s: command, i: id]
+	msg.postln; //--------------DEBUG--------------
+
+	(~idList.includes(msg[1]) || (msg[1].isInteger).not).if (
+		{//die angekommene ID ist schon im User-Array!
+			"ID nicht hinzugefügt! Entweder die ID ist mehrfach oder jemand hat keine Integer gesendet.".postln;
+		},
+		{//die angekommene ID ist neu
+			~idList.add(msg[1]);
+			"ID wurde aufgenommen.".postln;
+			~idList.postln; //--------------DEBUG--------------
+		}
+	)
+}, '/sendID');
+
+OSCdef(\received, {
+	//Rückmeldung ob alle die ihre nextID gekriegt haben?
+});
+
+window.view.decorator = FlowLayout(window.view.bounds, 5@5, 5@5);
+
+//Button zum Empfangen der IDs
+Button.new(window, 100@30)
+.states_([["Get IDs", Color.black, Color.blue(1, 0.2)]])
+.action_({getIDs.value;});
+
+//Hier wird die Anzahl der IDs dargestellt (wird dann vielleicht durch den OSCDef aktualisiert??)
+StaticText.new(window, 100@30)
+.string_(~idList.size;)
+.background_(Color.blue(1, 0.2))
+.align_(\center);
+
+//Button zum erstellen und verschicken der Reihenfolge des Kreises
+Button.new(window, 100@30)
+.states_([["Form Circle", Color.black, Color.yellow(1, 0.2)]])
+.action_({formCircle.value;});
+
+//Hier wird angezeigt ob alle die Liste erhalten haben
+StaticText.new(window, 100@30)
+.string_("Waiting...")
+.background_(Color.red(1, 0.3))
+.align_(\center);
+
+//Button zum Starten des Signals bei der kleinsten ID
+Button.new(window, 100@30)
+.states_([["Send Signal", Color.black, Color.cyan(1, 0.2)]])
+.action_({sendStartSignal.value;});
+
+//Zähler für Runden?? Wäre vielleicht nice
+StaticText.new(window, 100@30)
+.string_(0)
+.background_(Color.cyan(1, 0.2))
+.align_(\center);
+
+window.front;
+
+)
+
+
+
+
+
+
+(
+~netMaster.sendMsg('/receiveParams', "hopefully this worked") //--------------DEBUG--------------
+)
+
