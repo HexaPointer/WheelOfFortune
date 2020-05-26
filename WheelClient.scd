@@ -14,11 +14,10 @@ var nextID = 0; //Nächster User im Kreis
 var paramsArray = [
 	["Test", -1, 1, 0.1, "wichse"]
 ];
-
+var delay = 0.2;
 var sendParams = {//client sendet seine parameter weiter
 	//~net.sendMsg('/receiveParams', paramsArray)
 	~net.sendMsg('/receiveParams', nextID, v["Test"]); //für Testzwecke
-	//FORK???
 };
 
 var newClient = { |arr|
@@ -94,12 +93,16 @@ OSCdef(\receiveParams, {arg msg;
 	(msg[1] == ~id).if({
 		msg.postln; //--------------DEBUG--------------
 		fork {
-			0.5.wait;
+			delay.wait;
 			sendParams.value;
 		}
 
 	});
 }, '/receiveParams');
+
+OSCdef(\getDelay, {arg msg;
+	delay = msg[1];
+}, '/getDelay');
 
 v = newClient.value(paramsArray);
 )

@@ -1,7 +1,7 @@
 NetAddr.langPort;
 
 ~idList = List.new; //enthält alle IDs der clients
-~netMaster = NetAddr("127.0.0.1", 57140);
+~net = NetAddr("127.0.0.1", 57140);
 (
 
 //das hier wird das Master-Fenster erstellt
@@ -9,7 +9,7 @@ var window = Window.new("WheelOfFortune - Master", Rect(100, 100, 530, 75), fals
 
 // Fragt alle Clients nach ID, verbunden mit "Get IDs" Button
 var getIDs = {
-	~netMaster.sendMsg('/getID');
+	~net.sendMsg('/getID');
 };
 
 // Erstellt aus allen IDs einen Kreis, verbunden mit "Form Circle" Button
@@ -17,14 +17,14 @@ var formCircle = {
 	//sendet jedem client die ID vom nächsten im Kreis
 	for (0,  ~idList.size - 1,
 		{arg index;
-			~netMaster.sendMsg('/circle', ~idList.at(index), ~idList.at((index + 1) % ~idList.size));
+			~net.sendMsg('/circle', ~idList.at(index), ~idList.at((index + 1) % ~idList.size));
 		}
 	);
 };
 
 //Sendet Startsignal an ersten Client im Kreis, verbinden mit "Send Signal" Button
 var sendStartSignal = {
-	~netMaster.sendMsg('/receiveParams', ~idList.first);
+	~net.sendMsg('/receiveParams', ~idList.first);
 };
 
 
@@ -46,7 +46,7 @@ OSCdef(\sendID, {arg msg;
 
 OSCdef(\received, {
 	//Rückmeldung ob alle die ihre nextID gekriegt haben?
-});
+}, '\recieved');
 
 
 //// GUI Stuff ////
@@ -90,7 +90,9 @@ StaticText.new(window, 100@30)
 .align_(\center);
 */
 
-//DELAY TIME
+//DELAY TIME SLIDER
+~net.sendMsg('/getDelay', HIER DELAYTIME)
+
 
 window.front;
 
@@ -102,6 +104,6 @@ window.front;
 
 
 (
-~netMaster.sendMsg('/receiveParams', "hopefully this worked") //--------------DEBUG--------------
+~net.sendMsg('/receiveParams', "hopefully this worked") //--------------DEBUG--------------
 )
 
