@@ -15,7 +15,8 @@ var nextID = 0; //Nächster User im Kreis
 var paramsArray = [];
 
 var sendParams = {//client sendet seine parameter weiter
-	~net.sendMsg('/receiveParams', paramsArray)
+	//~net.sendMsg('/receiveParams', paramsArray)
+	~net.sendMsg('/receiveParams', "SOME KIND OF MESSAGE HERE") //für Testzwecke
 };
 //##############OSC Defs##############
 
@@ -36,6 +37,7 @@ OSCdef(\signal, {arg msg;
 	(msg[1] == ~id).if({
 		//Signal wird ausgewertet wenn an diesen Client gerichtet
 		//Nicht sicher was hier passieren wird
+		sendParams.value;
 	});
 });
 
@@ -44,7 +46,8 @@ OSCdef(\signal, {arg msg;
 //Wird aufgerufen von vorherigen, dier die aktuellen Parameter weiter schickt
 OSCdef(\receiveParams, {arg msg;
 	msg.postln; //--------------DEBUG--------------
-
+	sendParams.value;
+	~net.sendMsg('/signal', nextID);
 }, '/receiveParams');
 
 )
