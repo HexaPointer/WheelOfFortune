@@ -92,6 +92,8 @@ StaticText.new(window, 100@30)
 .align_(\center);
 */
 
+//DELAY TIME
+
 window.front;
 
 )

@@ -7,72 +7,20 @@ OSCjunction Setup:
 */
 (// NUR EINMAL AUSFÜHREN!
 ~id = 500000000.rand; //eigene ID
-~id.postln; //--------------DEBUG--------------
 ~net = NetAddr("127.0.0.1", 57140);
 )
 (
 var nextID = 0; //Nächster User im Kreis
-var paramsArray = [];
+var paramsArray = [
+	["Test", -1, 1, 0.1, "wichse"]
+];
 
 var sendParams = {//client sendet seine parameter weiter
 	//~net.sendMsg('/receiveParams', paramsArray)
-	~net.sendMsg('/receiveParams', "SOME KIND OF MESSAGE HERE") //für Testzwecke
+	~net.sendMsg('/receiveParams', newClient.value(a)["Test"]) //für Testzwecke
+	//FORK???
 };
-//##############OSC Defs##############
 
-//Master Commands
-
-//ID vom nächsten kriegen um Kreis zu bilden
-OSCdef(\circle, {arg msg;
-	(msg[1] == ~id).if({nextID = msg[2];});
-	nextID.postln; //--------------DEBUG--------------
-}, '/circle');
-
-//Sendet eigene ID an Master
-OSCdef(\getID, {
-	~net.sendMsg('/sendID', ~id);
-}, '/getID');
-
-OSCdef(\signal, {arg msg;
-	(msg[1] == ~id).if({
-		//Signal wird ausgewertet wenn an diesen Client gerichtet
-		//Nicht sicher was hier passieren wird
-		sendParams.value;
-	});
-});
-
-//Circle Commands
-
-//Wird aufgerufen von vorherigen, dier die aktuellen Parameter weiter schickt
-OSCdef(\receiveParams, {arg msg;
-	msg.postln; //--------------DEBUG--------------
-	sendParams.value;
-	~net.sendMsg('/signal', nextID);
-}, '/receiveParams');
-
-)
-
-(
-//Beispiel-Array
-//die einzelnen Slider lassen sich so konfigurieren: ["Name", MinValue, MaxValue, StepSize, "Einheit"]
-a = [
-	["Carrier", -5, 5, 1, "hz"],
-	["Mod", -3, 7, 1, "hz"],
-	["Amp", 0, 190, 10, "db"],
-	["Cutoff", -2, 11, 0.5, "hz"],
-	["Cutoff 2", -2, 11, 0.5, "hz"],
-	["Cutoff 3", -2, 11, 0.5, "hz"],
-	["Cutoff 4", -2, 11, 0.5, "hz"],
-	["Noch", -2, 11, 0.5, "m"],
-	["Mehr", -2, 11, 0.5, "m"],
-	["Zeug", -2, 11, 0.5, "m"],
-	["Zum", -2, 11, 0.5, "m"],
-	["Testen", -2, 11, 0.5, "m"],
-];
-)
-
-(
-//Diese Funktion erzeugt das Client-Fenster
 var newClient = { |arr|
 	var window = Window.new("Wheel Of Fortune - Client", Rect(100, 100, 410, 35 * arr.size + 40), false)
 	.background_(Color.white);
@@ -80,7 +28,7 @@ var newClient = { |arr|
 
 	window.view.decorator = FlowLayout(window.view.bounds, 5@5, 5@5);
 
-	//Lustiger Button
+	//Lustiger Button, suspended die eigenen Veränderungen, parameter unverändert weitergegeben
 	Button.new(window, 80@30)
 	.states_([
 		["an", Color.white, Color.green(0.5)],
@@ -89,7 +37,7 @@ var newClient = { |arr|
 
 	//Textfeld um die id darzustellen
 	StaticText.new(window, 100@30)
-	.string_(18229837)
+	.string_(~id)
 	.align_(\center)
 	.background_(Color.grey)
 	.stringColor_(Color.white);
@@ -121,6 +69,34 @@ var newClient = { |arr|
 	window.front;
 	values
 };
+//##############OSC Defs##############
 
-v = newClient.value(a);
+//Master Commands
+
+//ID vom nächsten kriegen um Kreis zu bilden
+OSCdef(\circle, {arg msg;
+	(msg[1] == ~id).if({nextID = msg[2];});
+	nextID.postln; //--------------DEBUG--------------
+}, '/circle');
+
+//Sendet eigene ID an Master
+OSCdef(\getID, {
+	~net.sendMsg('/sendID', ~id);
+}, '/getID');
+
+OSCdef(\signal, {arg msg;
+	(msg[1] == ~id).if({
+		sendParams.value;
+	});
+},'/signal');
+
+//Circle Commands
+
+//Wird aufgerufen von vorherigen, der die aktuellen Parameter weiter schickt
+OSCdef(\receiveParams, {arg msg;
+	msg.postln; //--------------DEBUG--------------
+	sendParams.value;
+}, '/receiveParams');
+
+v = newClient.value(paramsArray);
 )
