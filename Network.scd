@@ -29,8 +29,8 @@ OSCdef(\circle, {|msg|
 }, '/circle');
 
 //Wird aufgerufen von vorherigen, dier die aktuellen Parameter weiter schickt
-OSCdef(\receiveParams {
-	//
+OSCdef(\receiveParams, {
+
 }, '/receiveParams')
 
 
@@ -45,7 +45,7 @@ OSCdef(\receiveParams {
 
 //Das hier wird dann der Master code
 (
-var net = NetAddr("127.0.0.1", 57150);
+var net = NetAddr("127.0.0.1", 57140);
 
 var idArray = Array.new; //enthält alle IDs der clients
 
@@ -56,8 +56,8 @@ var idArray = Array.new; //enthält alle IDs der clients
 var nextArray = Array.new;
 
 var idCount = 0;
-~receiverID = 0;
-~nextID =;
+//~receiverID = 0; für debugging noch da, vielleicht nicht gebraucht
+//~nextID = 0;
 
 
 // Erstellt aus allen IDs einen Kreis
@@ -78,11 +78,13 @@ var generateCircle = {
 var sendCircle = {
 	//sendet jedem client die ID vom nächsten im Kreis
 	for (0, idArray.size,
-		{
-
+		{arg index;
+			//~receiverID = idArray[index]
+			//~nextID = nextArray[index]
+			net.sendMsg('/circle', idArray.at(index), idArray.wrapAt(index + 1));
 		}
 	);
-	net.sendMsg('/circle', ~receiverID, ~nextID);
+
 };
 //Wird gecalled, wenn ein client seine ID schickt
 OSCdef(\sendID, {|msg|
@@ -103,5 +105,9 @@ OSCdef(\sendID, {|msg|
 
 
 
-
 )
+
+
+(for (0, 10, {arg index;
+	(index+10).postln;
+}))
