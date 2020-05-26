@@ -1,18 +1,19 @@
-///////////////////////////////////////////////
-
-//Das hier wird dann der Master code
+NetAddr.langPort;
 
 ~idList = List.new; //enthält alle IDs der clients
 ~netMaster = NetAddr("127.0.0.1", 57140);
 (
 
-// Fragt alle Clients nach ID
-var getIDs = { //verbinden mit "Get IDs" Button
+//das hier wird das Master-Fenster erstellt
+var window = Window.new("WheelOfFortune - Master", Rect(100, 100, 530, 75), false).background_(Color.white);
+
+// Fragt alle Clients nach ID, verbunden mit "Get IDs" Button
+var getIDs = {
 	~netMaster.sendMsg('/getID');
 };
 
-// Erstellt aus allen IDs einen Kreis
-var formCircle = { //verbinden mit "Form Circle" Button
+// Erstellt aus allen IDs einen Kreis, verbunden mit "Form Circle" Button
+var formCircle = {
 	//sendet jedem client die ID vom nächsten im Kreis
 	for (0,  ~idList.size - 1,
 		{arg index;
@@ -21,13 +22,12 @@ var formCircle = { //verbinden mit "Form Circle" Button
 	);
 };
 
-//Sendet Signal an ersten Client im Kreis
-var sendStartSignal = { //verbinden mit "Send Signal" Button
+//Sendet Startsignal an ersten Client im Kreis, verbinden mit "Send Signal" Button
+var sendStartSignal = {
 	~netMaster.sendMsg('/signal', ~idList.first);
 };
 
-//das hier wird das Master-Fenster
-var window = Window.new("WOF - Master", Rect(100, 100, 215, 500), false).background_(Color.white);
+
 
 //Wird gecalled, wenn ein client seine ID schickt
 OSCdef(\sendID, {arg msg;
@@ -50,15 +50,20 @@ OSCdef(\received, {
 	//Rückmeldung ob alle die ihre nextID gekriegt haben?
 });
 
+
+//// GUI Stuff ////
 window.view.decorator = FlowLayout(window.view.bounds, 5@5, 5@5);
 
 //Button zum Empfangen der IDs
 Button.new(window, 100@30)
 .states_([["Get IDs", Color.black, Color.blue(1, 0.2)]])
-.action_({getIDs.value;});
+.action_({
+	getIDs.value;
+	~idCounter.string_(~idList.size;);
+});
 
 //Hier wird die Anzahl der IDs dargestellt (wird dann vielleicht durch den OSCDef aktualisiert??)
-StaticText.new(window, 100@30)
+~idCounter = StaticText.new(window, 100@30)
 .string_(~idList.size;)
 .background_(Color.blue(1, 0.2))
 .align_(\center);
@@ -79,11 +84,13 @@ Button.new(window, 100@30)
 .states_([["Send Signal", Color.black, Color.cyan(1, 0.2)]])
 .action_({sendStartSignal.value;});
 
+/*
 //Zähler für Runden?? Wäre vielleicht nice
 StaticText.new(window, 100@30)
 .string_(0)
 .background_(Color.cyan(1, 0.2))
 .align_(\center);
+*/
 
 window.front;
 

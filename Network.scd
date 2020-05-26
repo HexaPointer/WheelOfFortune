@@ -38,7 +38,7 @@ OSCdef(\signal, {arg msg;
 		//Signal wird ausgewertet wenn an diesen Client gerichtet
 		//Nicht sicher was hier passieren wird
 	});
-})
+});
 
 //Circle Commands
 
