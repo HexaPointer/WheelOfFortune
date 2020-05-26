@@ -17,10 +17,7 @@ var paramsArray = [
 
 var sendParams = {//client sendet seine parameter weiter
 	//~net.sendMsg('/receiveParams', paramsArray)
-	fork {
-	~net.sendMsg('/receiveParams', v["Test"]); //für Testzwecke
-		0.5.wait;
-	}
+	~net.sendMsg('/receiveParams', nextID, v["Test"]); //für Testzwecke
 	//FORK???
 };
 
@@ -37,7 +34,7 @@ var newClient = { |arr|
 		["an", Color.white, Color.green(0.5)],
 		["aus", Color.white, Color.red(0.5)]
 	]);
-.
+
 	//Textfeld um die id darzustellen
 	StaticText.new(window, 100@30)
 	.string_(~id)
@@ -94,8 +91,14 @@ OSCdef(\getID, {
 
 //Wird aufgerufen von vorherigen, der die aktuellen Parameter weiter schickt
 OSCdef(\receiveParams, {arg msg;
-	msg.postln; //--------------DEBUG--------------
-	sendParams.value;
+	(msg[1] == ~id).if({
+		msg.postln; //--------------DEBUG--------------
+		fork {
+			0.5.wait;
+			sendParams.value;
+		}
+
+	});
 }, '/receiveParams');
 
 v = newClient.value(paramsArray);
