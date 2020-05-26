@@ -19,7 +19,7 @@ var nextID = 0; //Nächster User im Kreis
 
 //ID vom nächsten kriegen um Kreis zu bilden
 OSCdef(\circle, {|msg|
-	//Die reinkommende Message besteht aus [s: cmd, i: recieverID, i: nextID]
+	//Die reinkommende Message besteht aus [s: cmd, i: receiverID, i: nextID]
 	msg.postln; //for debugging
 
 	(msg[1] == id).if({
@@ -29,9 +29,9 @@ OSCdef(\circle, {|msg|
 }, '/circle');
 
 //Wird aufgerufen von vorherigen, dier die aktuellen Parameter weiter schickt
-OSCdef(\recieveParams {
+OSCdef(\receiveParams {
 	//
-}, '/recieveParams')
+}, '/receiveParams')
 
 
 
@@ -56,7 +56,7 @@ var idArray = Array.new; //enthält alle IDs der clients
 var nextArray = Array.new;
 
 var idCount = 0;
-~recieverID = 0;
+~receiverID = 0;
 ~nextID =;
 
 
@@ -82,7 +82,7 @@ var sendCircle = {
 
 		}
 	);
-	net.sendMsg('/circle', ~recieverID, ~nextID);
+	net.sendMsg('/circle', ~receiverID, ~nextID);
 };
 //Wird gecalled, wenn ein client seine ID schickt
 OSCdef(\sendID, {|msg|
