@@ -24,15 +24,13 @@ var formCircle = {
 
 //Sendet Startsignal an ersten Client im Kreis, verbinden mit "Send Signal" Button
 var sendStartSignal = {
-	~netMaster.sendMsg('/signal', ~idList.first);
+	~netMaster.sendMsg('/receiveParams', ~idList.first);
 };
 
 
 
 //Wird gecalled, wenn ein client seine ID schickt
 OSCdef(\sendID, {arg msg;
-	//die reinkommende Message besteht aus [s: command, i: id]
-	msg.postln; //--------------DEBUG--------------
 
 	(~idList.includes(msg[1]) || (msg[1].isInteger).not).if (
 		{//die angekommene ID ist schon im User-Array!
@@ -82,7 +80,7 @@ StaticText.new(window, 100@30)
 //Button zum Starten des Signals bei der kleinsten ID
 Button.new(window, 100@30)
 .states_([["Send Signal", Color.black, Color.cyan(1, 0.2)]])
-.action_({sendStartSignal.value;});
+.action_({sendStartSignal.value;};);
 
 /*
 //Zähler für Runden?? Wäre vielleicht nice

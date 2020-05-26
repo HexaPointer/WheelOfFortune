@@ -17,7 +17,7 @@ var paramsArray = [
 
 var sendParams = {//client sendet seine parameter weiter
 	//~net.sendMsg('/receiveParams', paramsArray)
-	~net.sendMsg('/receiveParams', newClient.value(a)["Test"]) //für Testzwecke
+	~net.sendMsg('/receiveParams', v["Test"]); //für Testzwecke
 	//FORK???
 };
 
@@ -75,8 +75,11 @@ var newClient = { |arr|
 
 //ID vom nächsten kriegen um Kreis zu bilden
 OSCdef(\circle, {arg msg;
-	(msg[1] == ~id).if({nextID = msg[2];});
-	nextID.postln; //--------------DEBUG--------------
+	(msg[1] == ~id).if({
+		nextID = msg[2];
+		nextID.postln; //--------------DEBUG--------------
+	});
+
 }, '/circle');
 
 //Sendet eigene ID an Master
@@ -84,17 +87,11 @@ OSCdef(\getID, {
 	~net.sendMsg('/sendID', ~id);
 }, '/getID');
 
-OSCdef(\signal, {arg msg;
-	(msg[1] == ~id).if({
-		sendParams.value;
-	});
-},'/signal');
-
 //Circle Commands
 
 //Wird aufgerufen von vorherigen, der die aktuellen Parameter weiter schickt
 OSCdef(\receiveParams, {arg msg;
-	msg.postln; //--------------DEBUG--------------
+	//msg.postln; //--------------DEBUG--------------
 	sendParams.value;
 }, '/receiveParams');
 
