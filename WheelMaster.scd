@@ -95,10 +95,6 @@ EZSlider.new(window, 400@30, "Delay", ControlSpec(0, 0.5, lin, 0.05), { |self|
 	~net.sendMsg('/getDelay', self.value);
 });
 
-
-~net.sendMsg('/getDelay', HIER DELAYTIME)
-
-
 window.front;
 
 )
