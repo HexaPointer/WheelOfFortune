@@ -13,9 +13,13 @@ OSCjunction Setup:
 var nextID = 0; //Nächster User im Kreis
 var paramsArray = [
 	["Test", -1, 1, 0.1, "wichse"],
-	["Root Shift", -6, 6, 1, "HT"],
-	["Bass Shift", -6, 6, 1, "HT"],
-	["Synth Release", -2, 2, 0.1, "s"],
+	["Root Shift", -6, 6, 1, "HT"], //freq von sound1
+	["Release 1", -2, 2, 0.1, "s"], //rel von sound1
+	["Bass Shift", -6, 6, 1, "HT"], //freq von bass
+	["Lowpass", -20, 20, 1, "Hz"],  //lpfFreq von bass
+	["Kick Shift", -5, 5, 1, "Hz"], //freq von kick1
+	["Decay", -0.5, 0.5, 0.1, "s"], //rel von kick1
+	["Pause", -0.1, 0.1, 0.01, "s"], //something
 	["Huren", 0, 1, 1, "Sohn"],
 ];
 var delay = 0.2;
@@ -119,22 +123,10 @@ OSCdef(\getDelay, {arg msg;
 }, '/getDelay');
 
 //##############Synth Defs##############
-SynthDef(\kick1, {|freq=40, amp=0.1|
+SynthDef(\kick1, {|freq=40, amp=0.1, rel=0.3|
 	var sig = SinOsc.ar(XLine.ar(4, 1, 0.02) * freq);
-	sig = sig * EnvGen.ar(Env.perc(0.001, 0.4));
+	sig = sig * EnvGen.ar(Env.perc(0.001, rel));
 	Out.ar(0, sig!2);
-}).add;
-
-SynthDef.new(\kick2, {
-	|freq1 = 500, freq2 = 50, freq3 = 10, freqDur1 = 0.01, freqDur2 = 0.2, freq4 = 1, freq5 = (-1), atk = 0.01, rel = 1, cur1 = 1, cur2 = (-10), amp = 0.5, pan = 0, out = 0|
-	var  sig, env, freq;
-	freq = Env([freq1, freq2, freq3],[freqDur1, freqDur2], [freq4, freq5]).ar;
-	env = Env([0,1,0], [atk, rel], [cur1, cur2]).kr;
-	sig = SinOsc.ar(freq, pi/2);
-	sig = sig * env;
-	sig = Pan2.ar(sig, pan, amp);
-	Out.ar(out, sig)
-
 }).add;
 
 SynthDef.new(\sound1, {|freq = 400, amp = 0.05, rel = 2|
@@ -147,17 +139,27 @@ SynthDef.new(\sound1, {|freq = 400, amp = 0.05, rel = 2|
 }).add;
 
 SynthDef(\bass, {
-	|freq = 60, fco = 500, gate = 1|
+	|freq = 60, fco = 500, lpfFreq = 440|
 	var sig;
 	freq = Lag.kr(freq);
 	sig = LFSaw.ar(freq);
 	fco = Lag.kr(fco, 1);
 	sig = MoogFF.ar(sig, fco);
+	sig = LPF.ar(sig, lpfFreq);
 	sig = sig * 0.5;
 	Out.ar(0, sig!2);
 }).add;
 
+Pdef(\goKick1, Pbind(
+	\instrument, \kick1,
+	\freq, 40,
+	\dur, Pseq([1, Rest(1/2), 1/2,1, 1, Rest(1/2), 1/2, 1, 1, 1], inf),
+	\amp, 0.5,
+));
+
+Pdef(\goKick1).play;
 params = newClient.value(paramsArray);
 )
-
-Synth(\bass)
+Pdef(\goKick1).play;
+Synth(\kick1)
+s.scope;
