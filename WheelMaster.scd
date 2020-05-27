@@ -1,7 +1,9 @@
 NetAddr.langPort;
 
+(
 ~idList = List.new; //enthält alle IDs der clients
 ~net = NetAddr("127.0.0.1", 57140);
+)
 (
 
 //das hier wird das Master-Fenster erstellt
