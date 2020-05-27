@@ -20,6 +20,8 @@ var sendParams = {//client sendet seine parameter weiter
 	~net.sendMsg('/receiveParams', nextID, v["Test"]); //für Testzwecke
 };
 
+var params;
+
 var newClient = { |arr|
 	var window = Window.new("Wheel Of Fortune - Client", Rect(100, 100, 410, 35 * arr.size + 40), false)
 	.background_(Color.white);
@@ -112,7 +114,7 @@ OSCdef(\getDelay, {arg msg;
 	delay = msg[1];
 }, '/getDelay');
 
-v = newClient.value(paramsArray);
+params = newClient.value(paramsArray);
 )
 
 v
