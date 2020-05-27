@@ -107,15 +107,14 @@ OSCdef(\getID, {
 //Circle Commands
 
 //Wird aufgerufen von vorherigen, der die aktuellen Parameter weiter schickt
+//============Hier kommen ab msg[2] die ganzen absoluten werte als KV-Paar===================
+// Hier wird bspw. auch Synth(\sound1) ausgeführt, als oneShot
 OSCdef(\receiveParams, {arg msg;
 	(msg[1] == ~id).if({
 		msg.postln; //--------------DEBUG--------------
 		fork {
 			delay.wait;
 			sendParams.value;
-			[43, 48, 55, 64].collect({arg note;
-				Synth.new(\sound1, [\freq, (note).midicps]);
-			});
 		}
 
 	});
