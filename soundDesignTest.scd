@@ -46,32 +46,6 @@ Pdef(\goKick1, Pbind(
 
 
 
-(
-SynthDef.new(\kick2, {
-	|freq1 = 500, freq2 = 50, freq3 = 10, freqDur1 = 0.01, freqDur2 = 0.2, freq4 = 1, freq5 = (-1), atk = 0.01, rel = 1, cur1 = 1, cur2 = (-10), amp = 0.5, pan = 0, out = 0|
-	var  sig, env, freq;
-	freq = Env([freq1, freq2, freq3],[freqDur1, freqDur2], [freq4, freq5]).ar;
-	env = Env([0,1,0], [atk, rel], [cur1, cur2]).kr;
-	sig = SinOsc.ar(freq, pi/2);
-	sig = sig * env;
-	sig = Pan2.ar(sig, pan, amp);
-	Out.ar(out, sig)
-
-}).add;
-)
-
-(
-Pdef(\goKick2, Pbind(
-	\instrument, \kick2,
-	\freq, 50,
-	\dur, Pseq([Rest(0.75), 0.25], inf),
-	\amp, 0.5,
-)).play;)
-
-
-
-
-
 (SynthDef(\hat, {
 	var sig, env;
 	sig = PinkNoise.ar(1);
@@ -153,7 +127,7 @@ Pdefn(\mtranspose,0);
 Pdef(\Gobass).play;
 
 (
-SynthDef.new(\sound1, {|freq = 400, amp = 0.05, rel = 2|
+SynthDef.new(\sound1, {|freq = 400, amp = 0.05|
 	var sig, freqC, env;
 	env = EnvGen.kr(Env.perc(releaseTime:5), doneAction: 2);
 	freqC = freq * LFNoise1.kr(2!8).range(-0.25, 0.25).midiratio;
