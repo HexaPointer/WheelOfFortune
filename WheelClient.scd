@@ -12,7 +12,11 @@ OSCjunction Setup:
 (
 var nextID = 0; //Nächster User im Kreis
 var paramsArray = [
-	["Test", -1, 1, 0.1, "wichse"]
+	["Test", -1, 1, 0.1, "wichse"],
+	["Root Shift", -6, 6, 1, "HT"],
+	["Bass Shift", -6, 6, 1, "HT"],
+	["Synth Release", -2, 2, 0.1, "s"],
+	["Huren", 0, 1, 1, "Sohn"],
 ];
 var delay = 0.2;
 var sendParams = {//client sendet seine parameter weiter
@@ -121,7 +125,6 @@ SynthDef(\kick1, {|freq=40, amp=0.1|
 	Out.ar(0, sig!2);
 }).add;
 
-
 SynthDef.new(\kick2, {
 	|freq1 = 500, freq2 = 50, freq3 = 10, freqDur1 = 0.01, freqDur2 = 0.2, freq4 = 1, freq5 = (-1), atk = 0.01, rel = 1, cur1 = 1, cur2 = (-10), amp = 0.5, pan = 0, out = 0|
 	var  sig, env, freq;
@@ -136,7 +139,7 @@ SynthDef.new(\kick2, {
 
 SynthDef.new(\sound1, {|freq = 400, amp = 0.05, rel = 2|
 	var sig, freqC, env;
-	env = EnvGen.kr(Env.perc(releaseTime:5), doneAction: 2);
+	env = EnvGen.kr(Env.perc(releaseTime: rel), doneAction: 2);
 	freqC = freq * LFNoise1.kr(2!8).range(-0.25, 0.25).midiratio;
 	sig = VarSaw.ar(freqC) * env * amp;
 	sig = Splay.ar(sig);
@@ -145,16 +148,16 @@ SynthDef.new(\sound1, {|freq = 400, amp = 0.05, rel = 2|
 
 SynthDef(\bass, {
 	|freq = 60, fco = 500, gate = 1|
-	var env, sig;
-	env = Env.adsr(0.01, 0.1, 1/32);
-	env = EnvGen.kr(env, gate, doneAction:2);
+	var sig;
 	freq = Lag.kr(freq);
 	sig = LFSaw.ar(freq);
 	fco = Lag.kr(fco, 1);
 	sig = MoogFF.ar(sig, fco);
-	sig = sig * env * 0.5;
+	sig = sig * 0.5;
 	Out.ar(0, sig!2);
 }).add;
 
 params = newClient.value(paramsArray);
 )
+
+Synth(\bass)
