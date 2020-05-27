@@ -27,12 +27,20 @@ var newClient = { |arr|
 
 	window.view.decorator = FlowLayout(window.view.bounds, 5@5, 5@5);
 
+	values.put(\change, true);
+
 	//Lustiger Button, suspended die eigenen Veränderungen, parameter unverändert weitergegeben
 	Button.new(window, 80@30)
 	.states_([
-		["an", Color.white, Color.green(0.5)],
-		["aus", Color.white, Color.red(0.5)]
-	]);
+		["On", Color.white, Color.green(0.5)],
+		["Off", Color.white, Color.red(0.5)]
+	])
+	.action_({ |self|
+		(self.value == 0).if(
+			{values[\change] = true},
+			{values[\change] = false}
+		);
+	});
 
 	//Textfeld um die id darzustellen
 	StaticText.new(window, 100@30)
@@ -106,3 +114,5 @@ OSCdef(\getDelay, {arg msg;
 
 v = newClient.value(paramsArray);
 )
+
+v
