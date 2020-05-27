@@ -116,5 +116,3 @@ OSCdef(\getDelay, {arg msg;
 
 params = newClient.value(paramsArray);
 )
-
-v
