@@ -91,7 +91,7 @@ StaticText.new(window, 100@30)
 */
 
 //DELAY TIME SLIDER
-EZSlider.new(window, 400@30, "Delay", ControlSpec(0, 0.5, lin, 0.05), { |self|
+EZSlider.new(window, 400@30, "Delay", ControlSpec(0, 0.5, step: 0.05), { |self|
 	~net.sendMsg('/getDelay', self.value);
 });
 
