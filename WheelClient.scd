@@ -12,15 +12,15 @@ OSCjunction Setup:
 (
 var nextID = 0; //Nächster User im Kreis
 var paramsArray = [
-	["Test", -1, 1, 0.1, "wichse"],
+	//["Test", -1, 1, 0.1, "wichse"],
 	["Root Shift", -6, 6, 1, "HT"], //freq von sound1
 	["Release 1", -2, 2, 0.1, "s"], //rel von sound1
 	["Bass Shift", -6, 6, 1, "HT"], //freq von bass
 	["Lowpass", -20, 20, 1, "Hz"],  //lpfFreq von bass
-	["Kick Shift", -5, 5, 1, "Hz"], //freq von kick1
-	["Decay", -0.5, 0.5, 0.1, "s"], //rel von kick1
+	["Kick Shift", -5, 5, 1, "Hz"], //freq von kick
+	["Decay", -0.5, 0.5, 0.1, "s"], //rel von kick
 	["Pause", -0.1, 0.1, 0.01, "s"], //something
-	["Huren", 0, 1, 1, "Sohn"],
+	//["Huren", 0, 1, 1, "Sohn"],
 ];
 var delay = 0.2;
 var sendParams = {//client sendet seine parameter weiter
@@ -113,6 +113,9 @@ OSCdef(\receiveParams, {arg msg;
 		fork {
 			delay.wait;
 			sendParams.value;
+			[43, 48, 55, 64].collect({arg note;
+				Synth.new(\sound1, [\freq, (note).midicps]);
+			});
 		}
 
 	});
@@ -123,7 +126,7 @@ OSCdef(\getDelay, {arg msg;
 }, '/getDelay');
 
 //##############Synth Defs##############
-SynthDef(\kick1, {|freq=40, amp=0.1, rel=0.3|
+SynthDef(\kick, {|freq=40, amp=0.1, rel=0.3|
 	var sig = SinOsc.ar(XLine.ar(4, 1, 0.02) * freq);
 	sig = sig * EnvGen.ar(Env.perc(0.001, rel));
 	Out.ar(0, sig!2);
@@ -150,16 +153,13 @@ SynthDef(\bass, {
 	Out.ar(0, sig!2);
 }).add;
 
-Pdef(\goKick1, Pbind(
-	\instrument, \kick1,
+Pdef(\goKick, Pbind(
+	\instrument, \kick,
 	\freq, 40,
-	\dur, Pseq([1, Rest(1/2), 1/2,1, 1, Rest(1/2), 1/2, 1, 1, 1], inf),
+	\dur, 0.25,
 	\amp, 0.5,
 ));
 
-Pdef(\goKick1).play;
+Pdef(\goKick).play;
 params = newClient.value(paramsArray);
 )
-Pdef(\goKick1).play;
-Synth(\kick1)
-s.scope;

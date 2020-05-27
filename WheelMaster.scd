@@ -5,7 +5,15 @@ NetAddr.langPort;
 ~net = NetAddr("127.0.0.1", 57140);
 )
 (
-
+var initParams = (
+	\synthRoot: 60, //synth root note
+	\synthRelease: 5, //synth release time
+	\bassRoot: 35, //bass root note
+	\bassLPF: 440, //bass LPF frequency
+	\kickFreq: 40, //kick frequency
+	\kickDecay: 0.3, //kick decay
+	\kickDur: 0.25, //kick duration
+);
 //das hier wird das Master-Fenster erstellt
 var window = Window.new("WheelOfFortune - Master", Rect(100, 100, 530, 75), false).background_(Color.white);
 
@@ -26,7 +34,7 @@ var formCircle = {
 
 //Sendet Startsignal an ersten Client im Kreis, verbinden mit "Send Signal" Button
 var sendStartSignal = {
-	~net.sendMsg('/receiveParams', ~idList.first);
+	~net.sendMsg('/receiveParams', ~idList.first, initParams.getPairs);
 };
 
 
