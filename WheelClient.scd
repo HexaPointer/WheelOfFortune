@@ -62,11 +62,11 @@ var isRunning = false;
 var newClient = { |arr|
 	var window = Window.new("Wheel Of Fortune - Client", Rect(100, 100, 410, 35 * arr.size + 40), false)
 	.background_(Color.white);
-	var values = Dictionary.new;
+	var values = Array.new(10);
 
 	window.view.decorator = FlowLayout(window.view.bounds, 5@5, 5@5);
 
-	values.put(\change, true);
+	//values.put(\change, true);
 
 	//Lustiger Button, suspended die eigenen Veränderungen, parameter unverändert weitergegeben
 	Button.new(window, 80@30)
@@ -76,8 +76,8 @@ var newClient = { |arr|
 	])
 	.action_({ |self|
 		(self.value == 0).if(
-			{values[\change] = true},
-			{values[\change] = false}
+			{},//values[\change] = true},
+			{}//values[\change] = false}
 		);
 	});
 
@@ -90,14 +90,14 @@ var newClient = { |arr|
 
 	//Hier kommen die Slider
 	arr.do { |item, i|
-		values.put(item[0], 0);
+		values = values.add(0);
 		EZSlider.new(
 			window,
 			400@30,
 			item[0],
 			ControlSpec(item[1], item[2], step: item[3], default: 0, units: item[4]),
 			{ |self|
-				values[item[0]] = self.value;
+				values[i] = self.value;
 			},
 			labelWidth: 75,
 			unitWidth: 25,
