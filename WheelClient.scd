@@ -1,5 +1,7 @@
 NetAddr.langPort;
 
+s.boot
+
 /*
 OSCjunction Setup:
 - 'Start Receiving' auf 'WheelOfFortune Circle' (Port: NetAddr.langPort; Default ist 57120)
@@ -22,7 +24,7 @@ var slider = [
 ];
 var delay = 0.2;
 
-var synth;
+var bass;
 
 var setParams = { |msg|
 	(isRunning.not).if {
@@ -37,7 +39,7 @@ var setParams = { |msg|
 	kick.set([
 		\freq, msg[msg.indexOf(\kickFreq) + 1],
 		\rel, msg[msg.indexOf(\kickDecay) + 1],
-		\dur, msg[msg.indexOf(\kickDur) + 1]])
+		\dur, msg[msg.indexOf(\kickDur) + 1]]);
 };
 
 var changeParams = { |msg|
@@ -50,7 +52,7 @@ var changeParams = { |msg|
 			{
 				out[i] = item;
 			}
-		)
+		);
 		out
 	};
 };
