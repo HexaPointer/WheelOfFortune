@@ -6,11 +6,11 @@ NetAddr.langPort;
 )
 (
 var initParams = (
-	\synthRoot: 60, //synth root note
-	\synthRelease: 5, //synth release time
-	\bassRoot: 35, //bass root note
-	\bassLPF: 440, //bass LPF frequency
-	\kickFreq: 40, //kick frequency
+	\synthRoot: 60.0, //synth root note
+	\synthRelease: 5.0, //synth release time
+	\bassRoot: 35.0, //bass root note
+	\bassLPF: 440.0, //bass LPF frequency
+	\kickFreq: 40.0, //kick frequency
 	\kickDecay: 0.3, //kick decay
 	\kickDur: 0.25, //kick duration
 );
