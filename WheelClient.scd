@@ -60,7 +60,7 @@ var changeParams = { |msg|
 
 var sendParams = { |msg| //client sendet seine parameter weiter
 	var oscOut = ['/receiveParams', nextID];
-	oscOut = msg.addAll(changeParams.value(msg));
+	oscOut = oscOut.addAll(changeParams.value(msg));
 	~net.sendMsg(oscOut);
 };
 
