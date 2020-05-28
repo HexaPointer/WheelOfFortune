@@ -34,7 +34,9 @@ var formCircle = {
 
 //Sendet Startsignal an ersten Client im Kreis, verbinden mit "Send Signal" Button
 var sendStartSignal = {
-	~net.sendMsg('/receiveParams', ~idList.first, initParams.getPairs);
+	var oscOut = ['/receiveParams', ~idList.first];
+	oscOut = oscOut.addAll(initParams.getPairs);
+	~net.sendMsg(oscOut);
 };
 
 
