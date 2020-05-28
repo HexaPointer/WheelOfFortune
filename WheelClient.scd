@@ -30,6 +30,7 @@ var setParams = { |msg|
 	(isRunning.not).if {
 		bass = Synth(\bass);
 		kick.play;
+		isRunning = true;
 	};
 	bass.set([\freq, (msg[msg.indexOf(\bassRoot) + 1]).midicps]);
 	bass.set([\lpfFreq, (msg[msg.indexOf(\bassLPF) + 1]).midicps]);
