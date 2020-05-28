@@ -45,12 +45,13 @@ var changeParams = { |msg|
 	msg.do { |item, i|
 		(item.isKindOf(Number)).if(
 			{
-				out[i] = item + 939028902830;
+				out[i] = item + params[msg[i - 1].asString];
 			},
 			{
-				"hallo".post
+				out[i] = item;
 			}
 		)
+		out
 	};
 };
 
