@@ -12,15 +12,13 @@ OSCjunction Setup:
 (
 var nextID = 0; //Nächster User im Kreis
 var slider = [
-	//["Test", -1, 1, 0.1, "wichse"],
-	["Root Shift", -6, 6, 1, "HT"], //freq von synth
-	["Release 1", -2, 2, 0.1, "s"], //rel von synth
-	["Bass Shift", -6, 6, 1, "HT"], //freq von bass
-	["Lowpass", -20, 20, 1, "Hz"],  //lpfFreq von bass
-	["Kick Shift", -5, 5, 1, "Hz"], //freq von kick
-	["Decay", -0.5, 0.5, 0.1, "s"], //rel von kick
-	["Pause", -0.1, 0.1, 0.01, "s"], //something
-	//["Huren", 0, 1, 1, "Sohn"],
+	["synthRoot", -6, 6, 1, "HT"], //freq von synth
+	["synthRelease", -2, 2, 0.1, "s"], //rel von synth
+	["bassRoot", -6, 6, 1, "HT"], //freq von bass
+	["bassLPF", -20, 20, 1, "Hz"],  //lpfFreq von bass
+	["kickFreq", -5, 5, 1, "Hz"], //freq von kick
+	["kickDecay", -0.5, 0.5, 0.1, "s"], //rel von kick
+	["kickDur", -0.1, 0.1, 0.01, "s"], //something
 ];
 var delay = 0.2;
 
@@ -33,9 +31,9 @@ var setParams = { |msg|
 	};
 	bass.set([\freq, (msg[msg.indexOf(\bassRoot) + 1]).midicps]);
 	bass.set([\lpfFreq, (msg[msg.indexOf(\bassLPF) + 1]).midicps]);
-	
+
 	Synth(\synth, [\freq, (msg[msg.indexOf(\synthRoot) + 1]).midicps, \rel, msg[msg.indexOf(\synthRelease) + 1]]);
-	
+
 	kick.set([
 		\freq, msg[msg.indexOf(\kickFreq) + 1],
 		\rel, msg[msg.indexOf(\kickDecay) + 1],
@@ -57,8 +55,6 @@ var changeParams = { |msg|
 };
 
 var sendParams = { |msg| //client sendet seine parameter weiter
-	//~net.sendMsg('/receiveParams', slider)
-	//~net.sendMsg('/receiveParams', nextID, v["Test"]); //für Testzwecke
 	~net.sendMsg('/receiveParams', nextID, changeParams.value(msg));
 };
 
