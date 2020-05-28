@@ -19,7 +19,7 @@ var initParams = (
 var initParams = [
 	60.0, //synth root note
 	5.0, //synth release time
-	35.0, //bass root note
+	36.0, //bass root note
 	440.0, //bass LPF frequency
 	40.0, //kick frequency
 	0.3, //kick decay
