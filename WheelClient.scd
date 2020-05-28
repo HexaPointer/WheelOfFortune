@@ -11,10 +11,10 @@ OSCjunction Setup:
 )
 (
 var nextID = 0; //Nächster User im Kreis
-var paramsArray = [
+var slider = [
 	//["Test", -1, 1, 0.1, "wichse"],
-	["Root Shift", -6, 6, 1, "HT"], //freq von sound1
-	["Release 1", -2, 2, 0.1, "s"], //rel von sound1
+	["Root Shift", -6, 6, 1, "HT"], //freq von synth
+	["Release 1", -2, 2, 0.1, "s"], //rel von synth
 	["Bass Shift", -6, 6, 1, "HT"], //freq von bass
 	["Lowpass", -20, 20, 1, "Hz"],  //lpfFreq von bass
 	["Kick Shift", -5, 5, 1, "Hz"], //freq von kick
@@ -24,7 +24,7 @@ var paramsArray = [
 ];
 var delay = 0.2;
 var sendParams = {//client sendet seine parameter weiter
-	//~net.sendMsg('/receiveParams', paramsArray)
+	//~net.sendMsg('/receiveParams', slider)
 	~net.sendMsg('/receiveParams', nextID, v["Test"]); //für Testzwecke
 };
 
@@ -108,7 +108,7 @@ OSCdef(\getID, {
 
 //Wird aufgerufen von vorherigen, der die aktuellen Parameter weiter schickt
 //============Hier kommen ab msg[2] die ganzen absoluten werte als KV-Paar===================
-// Hier wird bspw. auch Synth(\sound1) ausgeführt, als oneShot
+// Hier wird bspw. auch Synth(\synth) ausgeführt, als oneShot
 OSCdef(\receiveParams, {arg msg;
 	(msg[1] == ~id).if({
 		msg.postln; //--------------DEBUG--------------
@@ -131,7 +131,7 @@ SynthDef(\kick, {|freq=40, amp=0.1, rel=0.3|
 	Out.ar(0, sig!2);
 }).add;
 
-SynthDef.new(\sound1, {|freq = 400, amp = 0.05, rel = 2|
+SynthDef.new(\synth, {|freq = 400, amp = 0.05, rel = 2|
 	var sig, freqC, env;
 	env = EnvGen.kr(Env.perc(releaseTime: rel), doneAction: 2);
 	freqC = freq * LFNoise1.kr(2!8).range(-0.25, 0.25).midiratio;
@@ -160,5 +160,5 @@ Pdef(\goKick, Pbind(
 ));
 
 Pdef(\goKick).play;
-params = newClient.value(paramsArray);
+params = newClient.value(slider);
 )
