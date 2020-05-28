@@ -44,16 +44,8 @@ var setParams = { |msg|
 	]);
 };
 
-var changeParams = { |msg|
-		var out = Array.new(10);
-		msg.do { |item, i|
-			out[i] = item + params[i];
-		};
-		out
-	};
-
 var sendParams = { |msg| //client sendet seine parameter weiter
-	~net.sendMsg('/receiveParams', nextID, *(changeParams.value(msg)));
+	~net.sendMsg('/receiveParams', nextID, *(msg + params));
 };
 
 var params;
