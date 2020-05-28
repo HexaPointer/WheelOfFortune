@@ -37,11 +37,11 @@ var setParams = { |msg|
 
 	Synth(\synth, [\freq, (msg[0]).midicps, \rel, msg[1]]);
 
-	kick.set([
+	kick.set(
 		\freq, msg[4],
 		\rel, msg[5],
 		\dur, msg[6]
-	]);
+	);
 };
 
 var sendParams = { |msg| //client sendet seine parameter weiter
