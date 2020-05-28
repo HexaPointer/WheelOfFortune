@@ -158,7 +158,7 @@ OSCdef(\receiveParams, {arg msg;
 		fork {
 			setParams.value(msg.drop(2));
 			delay.wait;
-			sendParams.value(msg);
+			sendParams.value(msg.drop(2));
 		}
 
 	});
