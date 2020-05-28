@@ -40,7 +40,8 @@ var setParams = { |msg|
 	kick.set([
 		\freq, msg[4],
 		\rel, msg[5],
-		\dur, msg[6]);
+		\dur, msg[6]
+	]);
 };
 
 var changeParams = { |msg|
