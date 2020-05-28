@@ -11,10 +11,10 @@ OSCjunction Setup:
 )
 (
 var nextID = 0; //Nächster User im Kreis
-var paramsArray = [
+var slider = [
 	//["Test", -1, 1, 0.1, "wichse"],
-	["Root Shift", -6, 6, 1, "HT"], //freq von sound1
-	["Release 1", -2, 2, 0.1, "s"], //rel von sound1
+	["Root Shift", -6, 6, 1, "HT"], //freq von synth
+	["Release 1", -2, 2, 0.1, "s"], //rel von synth
 	["Bass Shift", -6, 6, 1, "HT"], //freq von bass
 	["Lowpass", -20, 20, 1, "Hz"],  //lpfFreq von bass
 	["Kick Shift", -5, 5, 1, "Hz"], //freq von kick
@@ -24,27 +24,46 @@ var paramsArray = [
 ];
 var delay = 0.2;
 
-var setParams = {};
+var synth;
 
-var changeParams = {};
+var setParams = { |msg|
+	(isRunning.not).if {
+		bass = Synth(\bass);
+		kick.play;
+	};
+	bass.set([\freq, (msg[msg.indexOf(\bassRoot) + 1]).midicps]);
+	bass.set([\lpfFreq, (msg[msg.indexOf(\bassLPF) + 1]).midicps]);
+	
+	Synth(\synth, [\freq, (msg[msg.indexOf(\synthRoot) + 1]).midicps, \rel, msg[msg.indexOf(\synthRelease) + 1]]);
+	
+	kick.set([
+		\freq, msg[msg.indexOf(\kickFreq) + 1],
+		\rel, msg[msg.indexOf(\kickDecay) + 1],
+		\dur, msg[msg.indexOf(\kickDur) + 1]])
+};
+
+var changeParams = { |msg|
+	var out = Array.new(slider.size * 2);//hier weitermachen huresohn arschöach wichse
+	msg.do { |item, i|
+		(item.isKindOf(Number)).if(
+			{
+				out[i] = item + 939028902830;
+			},
+			{
+				"hallo".post
+			}
+		)
+	};
+};
 
 var sendParams = { |msg| //client sendet seine parameter weiter
-	//~net.sendMsg('/receiveParams', paramsArray)
+	//~net.sendMsg('/receiveParams', slider)
 	//~net.sendMsg('/receiveParams', nextID, v["Test"]); //für Testzwecke
 	~net.sendMsg('/receiveParams', nextID, changeParams.value(msg));
 };
 
 var params;
 var isRunning = false;
-
-var setParams = { |msg|
-	//synths und patterns starten falls not isRunning
-	//parameter auf synths anwenden
-};
-
-var changeParams = { |msg|
-	//parameter verändern und zurückgeben
-};
 
 var newClient = { |arr|
 	var window = Window.new("Wheel Of Fortune - Client", Rect(100, 100, 410, 35 * arr.size + 40), false)
@@ -102,6 +121,14 @@ var newClient = { |arr|
 	window.front;
 	values
 };
+
+var kick = Pdef(\goKick, Pbind(
+	\instrument, \kick,
+	\freq, 40,
+	\dur, 0.25,
+	\amp, 0.5,
+));
+
 //##############OSC Defs##############
 
 //Master Commands
@@ -124,12 +151,12 @@ OSCdef(\getID, {
 
 //Wird aufgerufen von vorherigen, der die aktuellen Parameter weiter schickt
 //============Hier kommen ab msg[2] die ganzen absoluten werte als KV-Paar===================
-// Hier wird bspw. auch Synth(\sound1) ausgeführt, als oneShot
+// Hier wird bspw. auch Synth(\synth) ausgeführt, als oneShot
 OSCdef(\receiveParams, {arg msg;
 	(msg[1] == ~id).if({
 		msg.postln; //--------------DEBUG--------------
 		fork {
-			setParams.value(msg);
+			setParams.value(msg.drop(2));
 			delay.wait;
 			sendParams.value(msg);
 		}
@@ -148,7 +175,7 @@ SynthDef(\kick, {|freq=40, amp=0.1, rel=0.3|
 	Out.ar(0, sig!2);
 }).add;
 
-SynthDef.new(\sound1, {|freq = 400, amp = 0.05, rel = 2|
+SynthDef.new(\synth, {|freq = 400, amp = 0.05, rel = 2|
 	var sig, freqC, env;
 	env = EnvGen.kr(Env.perc(releaseTime: rel), doneAction: 2);
 	freqC = freq * LFNoise1.kr(2!8).range(-0.25, 0.25).midiratio;
@@ -169,13 +196,5 @@ SynthDef(\bass, {
 	Out.ar(0, sig!2);
 }).add;
 
-Pdef(\goKick, Pbind(
-	\instrument, \kick,
-	\freq, 40,
-	\dur, 0.25,
-	\amp, 0.5,
-));
-
-Pdef(\goKick).play;
-params = newClient.value(paramsArray);
+params = newClient.value(slider);
 )
