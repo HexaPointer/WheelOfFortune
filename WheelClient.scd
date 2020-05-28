@@ -32,31 +32,24 @@ var setParams = { |msg|
 		kick.play;
 		isRunning = true;
 	};
-	bass.set([\freq, (msg[msg.indexOf(\bassRoot) + 1]).midicps]);
-	bass.set([\lpfFreq, (msg[msg.indexOf(\bassLPF) + 1]).midicps]);
+	bass.set([\freq, (msg[2]).midicps]);
+	bass.set([\lpfFreq, (msg[3]).midicps]);
 
-	Synth(\synth, [\freq, (msg[msg.indexOf(\synthRoot) + 1]).midicps, \rel, msg[msg.indexOf(\synthRelease) + 1]]);
+	Synth(\synth, [\freq, (msg[0]).midicps, \rel, msg[1]]);
 
 	kick.set([
-		\freq, msg[msg.indexOf(\kickFreq) + 1],
-		\rel, msg[msg.indexOf(\kickDecay) + 1],
-		\dur, msg[msg.indexOf(\kickDur) + 1]]);
+		\freq, msg[4],
+		\rel, msg[5],
+		\dur, msg[6]);
 };
 
 var changeParams = { |msg|
-	var out = Array.new(100);//hier weitermachen huresohn arschöach wichse
-	msg.do { |item, i|
-		(item.isKindOf(Number)).if(
-			{
-				out[i] = item + params[msg[i - 1].asString];
-			},
-			{
-				out[i] = item;
-			}
-		);
+		var out = Array.new(10);
+		msg.do { |item, i|
+			out[i] = item + params[i];
+		};
 		out
 	};
-};
 
 var sendParams = { |msg| //client sendet seine parameter weiter
 	~net.sendMsg('/receiveParams', nextID, *(changeParams.value(msg)));
