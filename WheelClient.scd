@@ -33,7 +33,7 @@ var setParams = { |msg|
 		isRunning = true;
 	};
 	bass.set([\freq, (msg[2]).midicps]);
-	bass.set([\lpfFreq, (msg[3]).midicps]);
+	bass.set([\lpfFreq, msg[3]]);
 
 	Synth(\synth, [\freq, (msg[0]).midicps, \rel, msg[1]]);
 
