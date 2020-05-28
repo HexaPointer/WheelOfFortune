@@ -32,16 +32,16 @@ var setParams = { |msg|
 		kick.play;
 		isRunning = true;
 	};
-	bass.set([\freq, (msg[2]).midicps]);
-	bass.set([\lpfFreq, (msg[3]).midicps]);
+	bass.set(\freq, (msg[2]).midicps);
+	bass.set(\lpfFreq, (msg[3]).midicps);
 
 	Synth(\synth, [\freq, (msg[0]).midicps, \rel, msg[1]]);
 
-	kick.set([
+	kick.set(
 		\freq, msg[4],
 		\rel, msg[5],
 		\dur, msg[6]
-	]);
+	);
 };
 
 var sendParams = { |msg| //client sendet seine parameter weiter
