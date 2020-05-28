@@ -144,7 +144,14 @@ OSCdef(\receiveParams, {arg msg;
 		fork {
 			setParams.value(msg.drop(2));
 			delay.wait;
-			sendParams.value(msg.drop(2));
+			msg[0].wrap(48, 72); //sorry
+			msg[1].wrap(2, 7);
+			msg[2].wrap(24, 48);
+			msg[3].wrap(110, 880);
+			msg[4].wrap(30, 80);
+			msg[5].wrap(0.1, 1);
+			msg[6].wrap(0.1, 1);
+			sendParams.value(msg);
 		}
 
 	});
