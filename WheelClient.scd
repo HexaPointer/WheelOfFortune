@@ -44,7 +44,7 @@ var setParams = { |msg|
 };
 
 var changeParams = { |msg|
-	var out = Array.new(slider.size * 2);//hier weitermachen huresohn arschöach wichse
+	var out = Array.new(100);//hier weitermachen huresohn arschöach wichse
 	msg.do { |item, i|
 		(item.isKindOf(Number)).if(
 			{
