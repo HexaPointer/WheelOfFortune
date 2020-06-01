@@ -24,7 +24,7 @@ var slider = [
 ];
 var delay = 0.2;
 
-var bass;
+var synth;
 
 var setParams = { |msg|
 	(isRunning.not).if {
