@@ -20,12 +20,12 @@ var slider = [
 	["bassRelease", -2, 2, 0.1, "s"], //rel von bass
 	["kickFreq", -5, 5, 1, "Hz"], //freq von kick
 	["kickDecay", -0.5, 0.5, 0.1, "s"], //rel von kick
-	["kickDur", -0.1, 0.1, 0.01, "s"], //something
+	["kickTrigger", -1, 1, 0.1, "s"], //something
 	["kickDist", 1, 50, 1, "x"] //Kick Distortion
 ];
 var delay = 0.2;
 
-var synth;
+var synth, kick;
 
 var setParams = { |msg|
 	(isRunning.not).if {
@@ -37,7 +37,7 @@ var setParams = { |msg|
 
 	Synth(\bass, [\freq, (msg[1]).midicps, \lpfFreq, msg[2], \rel, msg[3]]);
 
-	kick.set(\freq, (msg[4], \rel, msg(4), \trig, msg[6], \dist, msg[7]);
+	kick.set(\freq, msg[4], \rel, msg(4), \trig, msg[6], \dist, msg[7]);
 };
 
 var sendParams = { |msg| //client sendet seine parameter weiter
@@ -140,7 +140,8 @@ OSCdef(\receiveParams, {arg msg;
 			msg[3].wrap(110.0, 880.0),
 			msg[4].wrap(30.0, 80.0),
 			msg[5].wrap(0.1, 1.0),
-			msg[6].wrap(0.1, 1.0)
+			msg[6].wrap(0.2, 5),
+			msg[7].wrap(1, 50)
 		];
 		fork {
 			delay.wait;
