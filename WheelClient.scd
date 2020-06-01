@@ -134,13 +134,13 @@ OSCdef(\receiveParams, {arg msg;
 		setParams.value(msg.drop(2));
 		msg = msg.drop(2);
 		boundWrap = [
-			msg[0].wrap(48.0, 72.0), //sorry
+			msg[0].wrap(48.0, 84.0), //sorry
 			msg[1].wrap(24.0, 48.0),
 			msg[2].wrap(110.0, 880.0),
 			msg[3].wrap(2.0, 7.0),
 			msg[4].wrap(30.0, 80.0),
 			msg[5].wrap(0.1, 1.0),
-			msg[6].wrap(0.2, 5),
+			msg[6].wrap(0.2, 50),
 			msg[7].wrap(1, 50)
 		];
 		fork {
@@ -156,7 +156,7 @@ OSCdef(\getDelay, {arg msg;
 }, '/getDelay');
 
 //##############Synth Defs##############
-SynthDef(\kickLoop, { |freq=40, amp=0.1, trig=1, rel=0.3, dist=1|
+SynthDef(\kickLoop, { |freq=40, amp=0.3, trig=1, rel=0.3, dist=1|
 	var trigger = Impulse.ar(trig);
 	var sig = SinOsc.ar(EnvGen.ar(Env.perc(0, rel / 4), trigger) * freq * 3 + freq);
 	var env = EnvGen.ar(Env.perc(0.01, rel), trigger);
@@ -180,9 +180,22 @@ SynthDef(\bass, {
 	fco = Lag.kr(fco, 1);
 	sig = MoogFF.ar(sig, fco);
 	sig = RLPF.ar(sig, lpfFreq);
-	sig = sig * env * 0.5;
+	sig = sig * env * 0.1;
 	Out.ar(0, sig!2);
 }).add;
 
 params = newClient.value(slider);
+)
+(
+SynthDef(\bass, {
+	|freq = 60, lpfFreq = 880, rel = 2|
+	var sig, env;
+	env = EnvGen.kr(Env.perc(releaseTime: rel), doneAction: 2);
+	sig = LFSaw.ar(freq);
+	sig = RLPF.ar(sig, lpfFreq + (220 * EnvGen.ar(Env.perc(0.1, rel), doneAction: 2)), 0.1);
+	sig = sig * env * 0.1;
+	Out.ar(0, sig!2);
+}).add;
+
+Synth(\bass)
 )
