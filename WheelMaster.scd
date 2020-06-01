@@ -18,12 +18,14 @@ var initParams = (
 */
 var initParams = [
 	60.0, //synth root note
-	5.0, //synth release time
+	0, //synth delay
 	36.0, //bass root note
 	440.0, //bass LPF frequency
+	2.0, //bass release time
 	40.0, //kick frequency
 	0.3, //kick decay
-	0.25, //kick duration
+	1, //kick trigger
+	1, //kick distortion
 ];
 //das hier wird das Master-Fenster erstellt
 var window = Window.new("WheelOfFortune - Master", Rect(100, 100, 530, 75), false).background_(Color.white);
