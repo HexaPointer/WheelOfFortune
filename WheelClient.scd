@@ -15,9 +15,9 @@ OSCjunction Setup:
 var nextID = 0; //Nächster User im Kreis
 var slider = [
 	["synthRoot", -6, 6, 1, "HT"], //freq von synth
-	["synthRelease", -2, 2, 0.1, "s"], //rel von synth
 	["bassRoot", -6, 6, 1, "HT"], //freq von bass
 	["bassLPF", -20, 20, 1, "Hz"],  //lpfFreq von bass
+	["bassRelease", -2, 2, 0.1, "s"], //rel von bass
 	["kickFreq", -5, 5, 1, "Hz"], //freq von kick
 	["kickDecay", -0.5, 0.5, 0.1, "s"], //rel von kick
 	["kickDur", -0.1, 0.1, 0.01, "s"], //something
@@ -28,14 +28,13 @@ var bass;
 
 var setParams = { |msg|
 	(isRunning.not).if {
-		bass = Synth(\bass);
+		synth = Synth(\synth);
 		kick.play;
 		isRunning = true;
 	};
-	bass.set(\freq, (msg[2]).midicps);
-	bass.set(\lpfFreq, msg[3]);
+	synth.set(\freq, (msg[0]).midicps);
 
-	Synth(\synth, [\freq, (msg[0]).midicps, \rel, msg[1]]);
+	Synth(\bass, [\freq, (msg[1]).midicps, \lpfFreq, msg[2], \rel, msg[3]]);
 
 	kick.set(
 		\freq, msg[4],
@@ -172,24 +171,24 @@ SynthDef(\kick, {|freq=40, amp=0.1, rel=0.3|
 	Out.ar(0, sig!2);
 }).add;
 
-SynthDef.new(\synth, {|freq = 400, amp = 0.05, rel = 2|
-	var sig, freqC, env;
-	env = EnvGen.kr(Env.perc(releaseTime: rel), doneAction: 2);
+SynthDef.new(\synth, {|freq = 400, amp = 0.05|
+	var sig, freqC;
 	freqC = freq * LFNoise1.kr(2!8).range(-0.25, 0.25).midiratio;
-	sig = VarSaw.ar(freqC) * env * amp;
+	sig = VarSaw.ar(freqC) * amp;
 	sig = Splay.ar(sig);
 	Out.ar(0, sig);
 }).add;
 
 SynthDef(\bass, {
-	|freq = 60, fco = 500, lpfFreq = 440|
-	var sig;
+	|freq = 60, fco = 500, lpfFreq = 440, rel = 2|
+	var sig, env;
+	env = EnvGen.kr(Env.perc(releaseTime: rel), doneAction: 2);
 	freq = Lag.kr(freq);
 	sig = LFSaw.ar(freq);
 	fco = Lag.kr(fco, 1);
 	sig = MoogFF.ar(sig, fco);
-	sig = LPF.ar(sig, lpfFreq);
-	sig = sig * 0.5;
+	sig = RLPF.ar(sig, lpfFreq);
+	sig = sig * env * 0.5;
 	Out.ar(0, sig!2);
 }).add;
 
