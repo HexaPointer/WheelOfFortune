@@ -156,7 +156,7 @@ OSCdef(\getDelay, {arg msg;
 }, '/getDelay');
 
 //##############Synth Defs##############
-SynthDef(\kickLoop, { |freq=40, amp=0.3, trig=1, rel=0.3, dist=1|
+SynthDef(\kickLoop, { |freq=40, amp=0.4, trig=1, rel=0.3, dist=1|
 	var trigger = Impulse.ar(trig);
 	var sig = SinOsc.ar(EnvGen.ar(Env.perc(0, rel / 4), trigger) * freq * 3 + freq);
 	var env = EnvGen.ar(Env.perc(0.01, rel), trigger);
@@ -172,12 +172,12 @@ SynthDef.new(\synth, {|freq = 400, amp = 0.05|
 }).add;
 
 SynthDef(\bass, {
-	|freq = 60, lpfFreq = 440, rel = 2|
+	|freq = 60, lpfFreq = 440, rel = 2, amp = 0.05|
 	var sig, env;
 	env = EnvGen.kr(Env.perc(releaseTime: rel), doneAction: 2);
 	sig = LFSaw.ar(freq);
 	sig = RLPF.ar(sig, lpfFreq + (220 * EnvGen.ar(Env.perc(0.1, rel), doneAction: 2)), 0.1);
-	sig = sig * env * 0.1;
+	sig = sig * env * amp;
 	Out.ar(0, sig!2);
 }).add;
 
