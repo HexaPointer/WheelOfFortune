@@ -165,6 +165,7 @@ SynthDef(\kickLoop, { |freq=40, amp=0.4, trig=1, rel=0.3, dist=1|
 
 SynthDef.new(\synth, {|freq = 400, amp = 0.05|
 	var sig, freqC;
+	freq = freq * [1, 1.25, SinOsc.ar(1).range(1.6, 1.66)];
 	freqC = freq * LFNoise1.kr(2!8).range(-0.25, 0.25).midiratio;
 	sig = VarSaw.ar(freqC) * amp;
 	sig = Splay.ar(sig);
@@ -182,4 +183,16 @@ SynthDef(\bass, {
 }).add;
 
 params = newClient.value(slider);
+)
+(
+SynthDef.new(\synth, {|freq = 400, amp = 0.05|
+	var sig, freqC;
+	freq = freq * [1, 1.25, SinOsc.ar(1).range(1.6, 1.66)];
+	freqC = freq * LFNoise1.kr(2!8).range(-0.25, 0.25).midiratio;
+	sig = VarSaw.ar(freqC) * amp;
+	sig = Splay.ar(sig);
+	Out.ar(0, sig);
+}).add;
+
+Synth(\synth)
 )
