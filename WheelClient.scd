@@ -15,6 +15,7 @@ OSCjunction Setup:
 var nextID = 0; //Nächster User im Kreis
 var slider = [
 	["synthRoot", -6, 6, 1, "HT"], //freq von synth
+	["synthDelay", -0.5, 0.5, 0.1, "s"], //synth delay
 	["bassRoot", -6, 6, 1, "HT"], //freq von bass
 	["bassLPF", -20, 20, 1, "Hz"],  //lpfFreq von bass
 	["bassRelease", -2, 2, 0.1, "s"], //rel von bass
@@ -33,11 +34,14 @@ var setParams = { |msg|
 		kick = Synth(\kickLoop);
 		isRunning = true;
 	};
-	synth.set(\freq, (msg[0]).midicps);
+	fork {
+		msg[1].wait;
+		synth.set(\freq, (msg[0]).midicps);
+	};
 
-	Synth(\bass, [\freq, (msg[1]).midicps, \lpfFreq, msg[2], \rel, msg[3]]);
+	Synth(\bass, [\freq, (msg[2]).midicps, \lpfFreq, msg[3], \rel, msg[4]]);
 
-	kick.set(\freq, msg[4], \rel, msg[5], \trig, msg[6], \dist, msg[7]);
+	kick.set(\freq, msg[5], \rel, msg[6], \trig, msg[7], \dist, msg[8]);
 };
 
 var sendParams = { |msg| //client sendet seine parameter weiter
@@ -135,13 +139,14 @@ OSCdef(\receiveParams, {arg msg;
 		msg = msg.drop(2);
 		boundWrap = [
 			msg[0].wrap(48.0, 84.0), //sorry
-			msg[1].wrap(24.0, 48.0),
-			msg[2].wrap(110.0, 880.0),
-			msg[3].wrap(2.0, 7.0),
-			msg[4].wrap(30.0, 80.0),
-			msg[5].wrap(0.1, 1.0),
-			msg[6].wrap(0.2, 50),
-			msg[7].wrap(1, 50)
+			msg[1].wrap(0.0, 2.0),
+			msg[2].wrap(24.0, 48.0),
+			msg[3].wrap(110.0, 880.0),
+			msg[4].wrap(2.0, 7.0),
+			msg[5].wrap(30.0, 80.0),
+			msg[6].wrap(0.1, 1.0),
+			msg[7].wrap(0.2, 50),
+			msg[8].wrap(1, 50)
 		];
 		fork {
 			delay.wait;
