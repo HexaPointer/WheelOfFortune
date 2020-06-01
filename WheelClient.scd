@@ -172,23 +172,7 @@ SynthDef.new(\synth, {|freq = 400, amp = 0.05|
 }).add;
 
 SynthDef(\bass, {
-	|freq = 60, fco = 500, lpfFreq = 440, rel = 2|
-	var sig, env;
-	env = EnvGen.kr(Env.perc(releaseTime: rel), doneAction: 2);
-	freq = Lag.kr(freq);
-	sig = LFSaw.ar(freq);
-	fco = Lag.kr(fco, 1);
-	sig = MoogFF.ar(sig, fco);
-	sig = RLPF.ar(sig, lpfFreq);
-	sig = sig * env * 0.1;
-	Out.ar(0, sig!2);
-}).add;
-
-params = newClient.value(slider);
-)
-(
-SynthDef(\bass, {
-	|freq = 60, lpfFreq = 880, rel = 2|
+	|freq = 60, lpfFreq = 440, rel = 2|
 	var sig, env;
 	env = EnvGen.kr(Env.perc(releaseTime: rel), doneAction: 2);
 	sig = LFSaw.ar(freq);
@@ -197,5 +181,5 @@ SynthDef(\bass, {
 	Out.ar(0, sig!2);
 }).add;
 
-Synth(\bass)
+params = newClient.value(slider);
 )
