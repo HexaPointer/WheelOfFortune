@@ -107,13 +107,6 @@ var newClient = { |arr|
 	values
 };
 
-var kick = Pdef(\goKick, Pbind(
-	\instrument, \kick,
-	\freq, 40,
-	\dur, 0.25,
-	\amp, 0.5,
-));
-
 //##############OSC Defs##############
 
 //Master Commands
@@ -165,10 +158,11 @@ OSCdef(\getDelay, {arg msg;
 }, '/getDelay');
 
 //##############Synth Defs##############
-SynthDef(\kick, {|freq=40, amp=0.1, rel=0.3|
-	var sig = SinOsc.ar(XLine.ar(4, 1, 0.02) * freq);
-	sig = sig * EnvGen.ar(Env.perc(0.001, rel));
-	Out.ar(0, sig!2);
+SynthDef(\kickLoop, { |freq=40, amp=0.1, trig=1, rel=0.3, dist=1|
+	var trigger = Impulse.ar(trig);
+	var sig = SinOsc.ar(EnvGen.ar(Env.perc(0, rel / 4), trigger) * freq * 3 + freq);
+	var env = EnvGen.ar(Env.perc(0.01, rel), trigger);
+	Out.ar(0, ((sig * env * amp * dist).distort / dist)!2);
 }).add;
 
 SynthDef.new(\synth, {|freq = 400, amp = 0.05|
