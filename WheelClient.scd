@@ -37,7 +37,7 @@ var setParams = { |msg|
 
 	Synth(\bass, [\freq, (msg[1]).midicps, \lpfFreq, msg[2], \rel, msg[3]]);
 
-	kick.set(\freq, msg[4], \rel, msg(4), \trig, msg[6], \dist, msg[7]);
+	kick.set(\freq, msg[4], \rel, msg[5], \trig, msg[6], \dist, msg[7]);
 };
 
 var sendParams = { |msg| //client sendet seine parameter weiter
@@ -135,9 +135,9 @@ OSCdef(\receiveParams, {arg msg;
 		msg = msg.drop(2);
 		boundWrap = [
 			msg[0].wrap(48.0, 72.0), //sorry
-			msg[1].wrap(2.0, 7.0),
-			msg[2].wrap(24.0, 48.0),
-			msg[3].wrap(110.0, 880.0),
+			msg[1].wrap(24.0, 48.0),
+			msg[2].wrap(110.0, 880.0),
+			msg[3].wrap(2.0, 7.0),
 			msg[4].wrap(30.0, 80.0),
 			msg[5].wrap(0.1, 1.0),
 			msg[6].wrap(0.2, 5),
