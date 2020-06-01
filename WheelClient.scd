@@ -21,7 +21,7 @@ var slider = [
 	["kickFreq", -5, 5, 1, "Hz"], //freq von kick
 	["kickDecay", -0.5, 0.5, 0.1, "s"], //rel von kick
 	["kickTrigger", -1, 1, 0.1, "s"], //something
-	["kickDist", 1, 50, 1, "x"] //Kick Distortion
+	["kickDist", -10, 10, 1, "x"] //Kick Distortion
 ];
 var delay = 0.2;
 
