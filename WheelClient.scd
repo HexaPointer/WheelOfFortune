@@ -21,6 +21,7 @@ var slider = [
 	["kickFreq", -5, 5, 1, "Hz"], //freq von kick
 	["kickDecay", -0.5, 0.5, 0.1, "s"], //rel von kick
 	["kickDur", -0.1, 0.1, 0.01, "s"], //something
+	["kickDist", 1, 50, 1, "x"] //Kick Distortion
 ];
 var delay = 0.2;
 
@@ -29,18 +30,14 @@ var synth;
 var setParams = { |msg|
 	(isRunning.not).if {
 		synth = Synth(\synth);
-		kick.play;
+		kick = Synth(\kickLoop);
 		isRunning = true;
 	};
 	synth.set(\freq, (msg[0]).midicps);
 
 	Synth(\bass, [\freq, (msg[1]).midicps, \lpfFreq, msg[2], \rel, msg[3]]);
 
-	kick.set(
-		\freq, msg[4],
-		\rel, msg[5],
-		\dur, msg[6]
-	);
+	kick.set(\freq, (msg[4], \rel, msg(4), \trig, msg[6], \dist, msg[7]);
 };
 
 var sendParams = { |msg| //client sendet seine parameter weiter
