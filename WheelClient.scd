@@ -1,7 +1,5 @@
 NetAddr.langPort;
 
-s.boot
-
 /*
 OSCjunction Setup:
 - 'Start Receiving' auf 'WheelOfFortune Circle' (Port: NetAddr.langPort; Default ist 57120)
@@ -12,15 +10,17 @@ OSCjunction Setup:
 )
 
 (
+var net = NetAddr("127.0.0.1", 57140);
+
 var nextID = 0; //Nächster User im Kreis
 var slider = [
 	["synthRoot", -6, 6, 1, "HT"], //freq von synth
 	["synthDelay", -0.5, 0.5, 0.1, "s"], //synth delay
 	["bassRoot", -6, 6, 1, "HT"], //freq von bass
-	["bassLPF", -20, 20, 1, "Hz"],  //lpfFreq von bass
+	["bassCutoff", -20, 20, 1, "Hz"],  //lpfFreq von bass
 	["bassRelease", -2, 2, 0.1, "s"], //rel von bass
 	["kickFreq", -5, 5, 1, "Hz"], //freq von kick
-	["kickDecay", -0.5, 0.5, 0.1, "s"], //rel von kick
+	["kickRelease", -0.5, 0.5, 0.1, "s"], //rel von kick
 	["kickTrigger", -1, 1, 0.1, "Hz"], //something
 	["kickDist", -10, 10, 1, "x"] //Kick Distortion
 ];
@@ -40,20 +40,20 @@ var setParams = { |msg| //erhaltene Parameter werden interpretiert
 	kick.set(\freq, msg[5], \rel, msg[6], \trig, msg[7], \dist, msg[8]);
 };
 var sendParams = { |msg| //client sendet seine parameter weiter
-	~net.sendMsg('/receiveParams', nextID, *(msg + params));
+	net.sendMsg('/receiveParams', nextID, *(msg + params));
 };
 var params;
 var isRunning = false;
 
 var newClient = { |arr| //Fenster wird erstellt
-	var window = Window.new("Wheel Of Fortune - Client", Rect(100, 100, 410, 35 * arr.size + 40), false)
+	var window = Window.new("Wheel Of Fortune - Client", Rect(100, 100, 420, 35 * arr.size + 40), false)
 	.background_(Color.white);
 	var values = Array.new(10);
 
 	window.view.decorator = FlowLayout(window.view.bounds, 5@5, 5@5);
 
 	//Textfeld um die id darzustellen
-	StaticText.new(window, 400@30)
+	StaticText.new(window, 410@30)
 	.string_(~id)
 	.align_(\center)
 	.background_(Color.grey)
@@ -64,27 +64,27 @@ var newClient = { |arr| //Fenster wird erstellt
 		values = values.add(0);
 		EZSlider.new(
 			window,
-			400@30,
+			410@30,
 			item[0],
 			ControlSpec(item[1], item[2], step: item[3], default: 0, units: item[4]),
 			{ |self|
 				values[i] = self.value;
 			},
-			labelWidth: 75,
+			labelWidth: 100,
 			unitWidth: 25,
 			gap: 5@5,
 			margin: 5@5
 		)
 		.setColors(
 			stringBackground: Color.hsv(i / arr.size, 0.2, 1),
-			background: Color.hsv(i / arr.size, 0.4, 1)
+			background: Color.hsv(i / arr.size, 0.4, 1),
+			stringColor: Color.hsv(i / arr.size, 1, 0.5)
 		)
 		.labelView.align_(\center);
 	};
 	window.front;
 	values
 };
-~net = NetAddr("127.0.0.1", 57140);
 //##############OSC Defs##############
 
 //Master Commands
@@ -99,7 +99,7 @@ OSCdef(\circle, {arg msg;
 
 //Sendet eigene ID an Master
 OSCdef(\getID, {
-	~net.sendMsg('/sendID', ~id);
+	net.sendMsg('/sendID', ~id);
 }, '/getID');
 
 //Circle Commands
