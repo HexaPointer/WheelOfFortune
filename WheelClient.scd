@@ -106,7 +106,7 @@ OSCdef(\getID, {
 //Circle Commands
 
 //Wird aufgerufen von vorherigen, der die aktuellen Parameter weiter schickt
-//============Hier kommen ab msg[2] die ganzen absoluten werte als KV-Paar===================
+//============Hier kommen ab msg[2] die ganzen absoluten Werte als Float===================
 // Hier wird bspw. auch Synth(\synth) ausgeführt, als oneShot
 OSCdef(\receiveParams, {arg msg;
 	var boundWrap;

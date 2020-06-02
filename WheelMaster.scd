@@ -24,6 +24,7 @@ var window = Window.new("WheelOfFortune - Master", Rect(100, 100, 530, 75), fals
 // Fragt alle Clients nach ID, verbunden mit "Get IDs" Button
 var getIDs = {
 	~net.sendMsg('/getID');
+	~idCounter.string_(~idList.size);
 };
 
 // Erstellt aus allen IDs einen Kreis, verbunden mit "Form Circle" Button
@@ -55,10 +56,6 @@ OSCdef(\sendID, {arg msg;
 	)
 }, '/sendID');
 
-OSCdef(\received, {//Das hier raus? XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-	//Rückmeldung ob alle die ihre nextID gekriegt haben?
-}, '\recieved');
-
 //// GUI Stuff ////
 window.view.decorator = FlowLayout(window.view.bounds, 5@5, 5@5);
 
@@ -67,7 +64,6 @@ Button.new(window, 100@30)
 .states_([["Get IDs", Color.black, Color.blue(1, 0.2)]])
 .action_({
 	getIDs.value;
-	~idCounter.string_(~idList.size;);//Das hier vielleicht eher in den OSCDef, damit es sich immer aktualisiert? XXXXXXXXXX
 });
 
 //Hier wird die Anzahl der IDs dargestellt
