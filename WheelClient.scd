@@ -93,7 +93,6 @@ var newClient = { |arr| //Fenster wird erstellt
 OSCdef(\circle, {arg msg;
 	(msg[1] == ~id).if({
 		nextID = msg[2];
-		nextID.postln; //--------------DEBUG--------------
 	});
 
 }, '/circle');
@@ -106,16 +105,14 @@ OSCdef(\getID, {
 //Circle Commands
 
 //Wird aufgerufen von vorherigen, der die aktuellen Parameter weiter schickt
-//============Hier kommen ab msg[2] die ganzen absoluten Werte als Float===================
-// Hier wird bspw. auch Synth(\synth) ausgeführt, als oneShot
+//Hier kommen ab msg[2] die ganzen absoluten Werte als Float
 OSCdef(\receiveParams, {arg msg;
 	var boundWrap;
 	(msg[1] == ~id).if({
-		msg.postln; //--------------DEBUG--------------
 		setParams.value(msg.drop(2));
 		msg = msg.drop(2);
 		boundWrap = [
-			msg[0].wrap(48.0, 84.0), //sorry
+			msg[0].wrap(48.0, 84.0),
 			msg[1].wrap(0.0, 2.0),
 			msg[2].wrap(24.0, 48.0),
 			msg[3].wrap(110.0, 880.0),

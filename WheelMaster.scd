@@ -34,6 +34,7 @@ var formCircle = {
 			~net.sendMsg('/circle', ~idList.at(index), ~idList.at((index + 1) % ~idList.size));
 		}
 	);
+	"Circle formed!".postln;
 };
 
 //Sendet Startsignal an ersten Client im Kreis, verbinden mit "Send Signal" Button
