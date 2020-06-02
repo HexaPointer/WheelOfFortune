@@ -9,8 +9,8 @@ OSCjunction Setup:
 */
 (// NUR EINMAL AUSFÜHREN!
 ~id = 500000000.rand; //eigene ID
-~net = NetAddr("127.0.0.1", 57140);
 )
+
 (
 var nextID = 0; //Nächster User im Kreis
 var slider = [
@@ -84,7 +84,7 @@ var newClient = { |arr| //Fenster wird erstellt
 	window.front;
 	values
 };
-
+~net = NetAddr("127.0.0.1", 57140);
 //##############OSC Defs##############
 
 //Master Commands

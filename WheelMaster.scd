@@ -2,7 +2,6 @@ NetAddr.langPort;
 
 (
 ~idList = List.new; //enthält alle IDs der clients
-~net = NetAddr("127.0.0.1", 57140);
 )
 
 (
@@ -19,7 +18,7 @@ var initParams = [
 ];
 
 //das hier wird das Master-Fenster erstellt
-var window = Window.new("WheelOfFortune - Master", Rect(100, 100, 530, 75), false).background_(Color.white);
+var window = Window.new("WheelOfFortune - Master", Rect(100, 100, 430, 75), false).background_(Color.white);
 
 // Fragt alle Clients nach ID, verbunden mit "Get IDs" Button
 var getIDs = {
@@ -42,6 +41,7 @@ var sendStartSignal = {
 	~net.sendMsg('/receiveParams', ~idList.first, *initParams);
 };
 
+~net = NetAddr("127.0.0.1", 57140);
 //Wird gecalled, wenn ein client seine ID schickt
 OSCdef(\sendID, {arg msg;
 	(~idList.includes(msg[1]) || (msg[1].isInteger).not).if (
@@ -77,19 +77,13 @@ Button.new(window, 100@30)
 .states_([["Form Circle", Color.black, Color.yellow(1, 0.2)]])
 .action_({formCircle.value;});
 
-//Hier wird angezeigt ob alle die Liste erhalten haben
-StaticText.new(window, 100@30)
-.string_("Waiting...")
-.background_(Color.red(1, 0.3))
-.align_(\center);
-
 //Button zum Starten des Signals bei der kleinsten ID
 Button.new(window, 100@30)
 .states_([["Send Signal", Color.black, Color.cyan(1, 0.2)]])
 .action_({sendStartSignal.value;};);
 
 //DELAY TIME SLIDER
-EZSlider.new(window, 520@30, "Delay", ControlSpec(0, 0.5, step: 0.02), { |self|
+EZSlider.new(window, 400@30, "Delay", ControlSpec(0, 0.5, step: 0.02), { |self|
 	~net.sendMsg('/getDelay', self.value);
 });
 
