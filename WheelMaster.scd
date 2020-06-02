@@ -4,18 +4,8 @@ NetAddr.langPort;
 ~idList = List.new; //enthält alle IDs der clients
 ~net = NetAddr("127.0.0.1", 57140);
 )
+
 (
-/*
-var initParams = (
-	\synthRoot: 60.0, //synth root note
-	\synthRelease: 5.0, //synth release time
-	\bassRoot: 35.0, //bass root note
-	\bassLPF: 440.0, //bass LPF frequency
-	\kickFreq: 40.0, //kick frequency
-	\kickDecay: 0.3, //kick decay
-	\kickDur: 0.25, //kick duration
-);
-*/
 var initParams = [
 	60.0, //synth root note
 	0, //synth delay
@@ -27,6 +17,7 @@ var initParams = [
 	1, //kick trigger
 	1, //kick distortion
 ];
+
 //das hier wird das Master-Fenster erstellt
 var window = Window.new("WheelOfFortune - Master", Rect(100, 100, 530, 75), false).background_(Color.white);
 
@@ -50,11 +41,8 @@ var sendStartSignal = {
 	~net.sendMsg('/receiveParams', ~idList.first, *initParams);
 };
 
-
-
 //Wird gecalled, wenn ein client seine ID schickt
 OSCdef(\sendID, {arg msg;
-
 	(~idList.includes(msg[1]) || (msg[1].isInteger).not).if (
 		{//die angekommene ID ist schon im User-Array!
 			"ID nicht hinzugefügt! Entweder die ID ist mehrfach oder jemand hat keine Integer gesendet.".postln;
@@ -67,10 +55,9 @@ OSCdef(\sendID, {arg msg;
 	)
 }, '/sendID');
 
-OSCdef(\received, {
+OSCdef(\received, {//Das hier raus? XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 	//Rückmeldung ob alle die ihre nextID gekriegt haben?
 }, '\recieved');
-
 
 //// GUI Stuff ////
 window.view.decorator = FlowLayout(window.view.bounds, 5@5, 5@5);
@@ -80,10 +67,10 @@ Button.new(window, 100@30)
 .states_([["Get IDs", Color.black, Color.blue(1, 0.2)]])
 .action_({
 	getIDs.value;
-	~idCounter.string_(~idList.size;);
+	~idCounter.string_(~idList.size;);//Das hier vielleicht eher in den OSCDef, damit es sich immer aktualisiert? XXXXXXXXXX
 });
 
-//Hier wird die Anzahl der IDs dargestellt (wird dann vielleicht durch den OSCDef aktualisiert??)
+//Hier wird die Anzahl der IDs dargestellt
 ~idCounter = StaticText.new(window, 100@30)
 .string_(~idList.size;)
 .background_(Color.blue(1, 0.2))
@@ -105,19 +92,10 @@ Button.new(window, 100@30)
 .states_([["Send Signal", Color.black, Color.cyan(1, 0.2)]])
 .action_({sendStartSignal.value;};);
 
-/*
-//Zähler für Runden?? Wäre vielleicht nice
-StaticText.new(window, 100@30)
-.string_(0)
-.background_(Color.cyan(1, 0.2))
-.align_(\center);
-*/
-
 //DELAY TIME SLIDER
-EZSlider.new(window, 400@30, "Delay", ControlSpec(0, 0.5, step: 0.05), { |self|
+EZSlider.new(window, 520@30, "Delay", ControlSpec(0, 0.5, step: 0.02), { |self|
 	~net.sendMsg('/getDelay', self.value);
 });
 
 window.front;
-
 )
