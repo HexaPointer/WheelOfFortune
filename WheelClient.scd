@@ -52,24 +52,8 @@ var newClient = { |arr| //Fenster wird erstellt
 
 	window.view.decorator = FlowLayout(window.view.bounds, 5@5, 5@5);
 
-	//values.put(\change, true);XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-
-	//Lustiger Button, suspended die eigenen Veränderungen XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-	Button.new(window, 80@30)//raus????????
-	.states_([
-		["On", Color.white, Color.green(0.5)],
-		["Off", Color.white, Color.red(0.5)]
-	])
-	.action_({ |self|
-		(self.value == 0).if(
-			{},//values[\change] = true},
-			{}//values[\change] = false}
-		);
-	});
-	//XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-
 	//Textfeld um die id darzustellen
-	StaticText.new(window, 100@30)
+	StaticText.new(window, 400@30)
 	.string_(~id)
 	.align_(\center)
 	.background_(Color.grey)
