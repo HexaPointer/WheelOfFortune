@@ -25,10 +25,8 @@ var slider = [
 	["kickDist", -10, 10, 1, "x"] //Kick Distortion
 ];
 var delay = 0.2;
-
 var synth, kick;
-
-var setParams = { |msg|
+var setParams = { |msg| //erhaltene Parameter werden interpretiert
 	(isRunning.not).if {
 		synth = Synth(\synth);
 		kick = Synth(\kickLoop);
@@ -38,30 +36,26 @@ var setParams = { |msg|
 		msg[1].wait;
 		synth.set(\freq, (msg[0]).midicps);
 	};
-
 	Synth(\bass, [\freq, (msg[2]).midicps, \lpfFreq, msg[3], \rel, msg[4]]);
-
 	kick.set(\freq, msg[5], \rel, msg[6], \trig, msg[7], \dist, msg[8]);
 };
-
 var sendParams = { |msg| //client sendet seine parameter weiter
 	~net.sendMsg('/receiveParams', nextID, *(msg + params));
 };
-
 var params;
 var isRunning = false;
 
-var newClient = { |arr|
+var newClient = { |arr| //Fenster wird erstellt
 	var window = Window.new("Wheel Of Fortune - Client", Rect(100, 100, 410, 35 * arr.size + 40), false)
 	.background_(Color.white);
 	var values = Array.new(10);
 
 	window.view.decorator = FlowLayout(window.view.bounds, 5@5, 5@5);
 
-	//values.put(\change, true);
+	//values.put(\change, true);XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
-	//Lustiger Button, suspended die eigenen Veränderungen, parameter unverändert weitergegeben
-	Button.new(window, 80@30)
+	//Lustiger Button, suspended die eigenen Veränderungen XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+	Button.new(window, 80@30)//raus????????
 	.states_([
 		["On", Color.white, Color.green(0.5)],
 		["Off", Color.white, Color.red(0.5)]
@@ -72,6 +66,7 @@ var newClient = { |arr|
 			{}//values[\change] = false}
 		);
 	});
+	//XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 	//Textfeld um die id darzustellen
 	StaticText.new(window, 100@30)
@@ -102,8 +97,6 @@ var newClient = { |arr|
 		)
 		.labelView.align_(\center);
 	};
-
-	//Fenster erscheint und Dictionary wird zurückgegeben
 	window.front;
 	values
 };
@@ -188,16 +181,4 @@ SynthDef(\bass, {
 }).add;
 
 params = newClient.value(slider);
-)
-(
-SynthDef.new(\synth, {|freq = 400, amp = 0.05|
-	var sig, freqC;
-	freq = freq * [1, 1.25, LFNoise0.ar(2).range(1.5, 1.875)];
-	freqC = freq * LFNoise1.kr(2!8).range(-0.25, 0.25).midiratio;
-	sig = VarSaw.ar(freqC) * amp;
-	sig = Splay.ar(sig);
-	Out.ar(0, sig);
-}).add;
-
-Synth(\synth)
 )
