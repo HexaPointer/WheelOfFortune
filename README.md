@@ -7,6 +7,7 @@ Um Teil des Wheel of Fortune zu werden:
 	- Runterscrollen zur Junction "Wheel of Fortune"
 	- Start Sending mit Port 57140
 	- Start Receiving mit dem NetAddr.langPort (default ist 57120)
+- Server booten
 - Erste Klammer ausführen (da wo eine ID generiert wird)
 - Zweite (große) Klammer ausführen
 - Dann sollte eine GUI auftauchen, sobald ihr Sound hört, könnt ihr die Slider verändern, wie ihr möchtet.
